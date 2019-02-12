@@ -7,7 +7,9 @@
   			<v-flex xs12 sm6 md4 lg3 v-for="person in team" :key="person.name">
   				<v-card class="text-xs-center ma-3">
   					<v-reponsive class="pt-4">
-  						image goes here
+  						<v-avatar size="100" class="grey lighten-2">
+  							<img :src="person.avatar">
+  						</v-avatar>
   					</v-reponsive>
   					<v-card-text>
   						<div class="subheading">{{person.name}}</div>
@@ -33,11 +35,11 @@
   	data() {
   		return {
   			team: [
-  				{name: 'Benjamin Owenda', role: 'Web developer'},
-  				{name: 'Ryu', role: 'Graphic designer'},
-  				{name: 'Chun Li', role: 'Web developer'},
-  				{name: 'Gouken', role: 'Social Media'},
-  				{name: 'Yoshi', role: 'Sales'},
+  				{name: 'Benjamin Owenda', role: 'Web developer', avatar: '/avatar-1.png'},
+  				{name: 'Ryu', role: 'Graphic designer', avatar: '/avatar-2.png'},
+  				{name: 'Chun Li', role: 'Web developer', avatar: '/avatar-3.png'},
+  				{name: 'Gouken', role: 'Social Media', avatar: '/avatar-4.png'},
+  				{name: 'Yoshi', role: 'Sales', avatar: '/avatar-5.png'},
   			]
   		}
   	}

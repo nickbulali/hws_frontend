@@ -13,8 +13,11 @@
   				</v-flex>
   				<v-flex xs12 md6>
   					<v-card class="pa-3 ma-1">
-  						<div class="caption grey--text">Jobs</div>
+  						<div class="caption grey--text">Recommended Jobs</div>
   					</v-card>
+            <v-card class="pa-3 ma-1">
+              <div class="caption grey--text">Other Jobs</div>
+            </v-card>
   				</v-flex>
   				<v-flex xs12 md3>
   					<v-card class="pa-3 ma-1">
