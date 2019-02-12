@@ -26,6 +26,7 @@
 
 <script>
 	import format from 'date-fns/format'
+	import apiCall from '../utils/api'
 	export default {
 		data(){
 			return {
@@ -43,7 +44,14 @@
 			submit(){
 				if(this.$refs.form.validate()){
 					this.loading = true
-					console.log(this.title, this.content)
+					
+					apiCall({url: '/item?' + this.query, method: 'GET' })
+				        .then(resp => {
+				          console.log(resp)
+				        })
+				        .catch(error => {
+				          console.log(error.response)
+				        })
 				}
 
 				this.loading = false
