@@ -58,6 +58,7 @@
 				this.dialog = false
 				this.$emit('projectAdded')
 				
+				
 			}
 		},
 		computed: {
