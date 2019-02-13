@@ -25,7 +25,7 @@
 				</v-list>
 			</v-menu>
 
-			<v-btn flat color="grey">
+			<v-btn flat color="grey" @click="signOut">
 				<span>Sign Out</span>
 				<v-icon right>exit_to_app</v-icon>
 			</v-btn>
@@ -61,7 +61,8 @@
 </template>
 
 <script>
-import Popup from './Popup'
+	import Popup from './Popup'
+  	import { AUTH_LOGOUT } from '../store/actions/auth'
 export default {
 	components: {
 		Popup
@@ -76,6 +77,11 @@ export default {
 			],
 			snackbar: false
 		}
-	}
+	},
+	methods: {
+      signOut: function () {
+        this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push('/login'))
+      },
+    },
 }
 </script>
