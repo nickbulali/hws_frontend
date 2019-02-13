@@ -1,6 +1,6 @@
 <template>
   <v-app class="grey lighten-4">
-    <Navbar v-if="['Login', 'register'].indexOf($route.name) == -1"/>
+    <Navbar v-if="['Login', 'Register'].indexOf($route.name) == -1"/>
     <v-content class="mx-4 mb-4 mt-2">
       <router-view></router-view>
     </v-content>

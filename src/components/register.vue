@@ -2,8 +2,12 @@
 	
 	<div id="inspire"> 
 	<v-card class="elevation-3" id="login-card">
+		<v-snackbar v-model="snackbar" :timeout="4000" top color="success">
+			<span>Account Created. We've sent you an activation link via email.</span>
+			<v-btn flat color="white" @click="errorsnackbar = false">Close</v-btn>
+		</v-snackbar>
 		<v-snackbar v-model="errorsnackbar" :timeout="4000" top color="error">
-			<span>Email/Password wrong or Account is not activated</span>
+			<span>Something went wrong. Kindly try again</span>
 			<v-btn flat color="white" @click="errorsnackbar = false">Close</v-btn>
 		</v-snackbar>
 		<Loading v-if='authLoading'/>
@@ -17,30 +21,46 @@
 		    lazy-validation
 		  >
 			  <v-card-text>
-			    <v-text-field
-			      v-model="username"
-			      :rules="emailRules"
+			  	<v-text-field
+			      v-model="userData.name"
+			      :rules="nameRules"
 			      prepend-icon="person"
-			      name="username"
+			      name="name"
+			      label="Username"
+			      required
+			    ></v-text-field>
+			    <v-text-field
+			      v-model="userData.email"
+			      :rules="emailRules"
+			      prepend-icon="mail"
+			      name="email"
 			      label="E-mail"
 			      required
 			    ></v-text-field>
 			    <v-text-field
-			    	v-model="password"
+			    	v-model="userData.password"
 				    prepend-icon="lock"
 				    :rules="passwordRules"
 				    name="password"
 				    label="Password"
 				    type="password"
 				  ></v-text-field>
+				  <v-text-field
+			    	v-model="confirmpassword"
+				    prepend-icon="lock"
+				    :rules="passwordConfirmRules"
+				    name="password"
+				    label="Confirm Password"
+				    type="password"
+				  ></v-text-field>
 				</v-card-text>
 				<v-card-actions>
 					<div>
-				        <v-btn flat small to="register">Create an account</v-btn>
+				        <v-btn flat small to="login">Login</v-btn>
 				      </div>
 		        	<v-spacer></v-spacer>
-					<v-btn color="primary" round :disabled="!valid" @click="login" :loading="loading">
-				          Login
+					<v-btn color="primary" round :disabled="!valid" @click="create" :loading="loading">
+				          Create account
 				    </v-btn>
 				</v-card-actions>
 		  </v-form>
@@ -61,28 +81,44 @@
   }
 </style>
 <script>
-  import {AUTH_REQUEST} from '../store/actions/auth'
+  import apiCall from '../utils/api'
   import Loading from './loading'
   import { mapState } from 'vuex'
   export default {
-  	name: 'Login',
+  	name: 'Register',
     components: {
       Loading
     },
     data: () => {
     	return {
+    	  snackbar: false,
     	  errorsnackbar: false,
     	  loading: false,
 	      valid: true,
-	      password: '',
+
+	      confirmpassword: '',
+
+	      passwordConfirmRules: [
+	      	v => !!v || 'Password Confirm is required'
+	      ],
+	      
+	      nameRules: [
+	        v => !!v || 'Name is required'
+	      ],
+	      
 	      passwordRules: [
 	        v => !!v || 'Password is required'
 	      ],
-	      username: '',
+	      
 	      emailRules: [
 	        v => !!v || 'E-mail is required',
 	        v => /.+@.+/.test(v) || 'E-mail must be valid'
 	      ],
+	      userData: {
+	      	name: '',
+	      	password: '',
+	      	email: '',
+	      }
 	  };
     },
 
@@ -90,19 +126,19 @@
       reset () {
         this.$refs.form.reset()
       },
-      login: function () {
-      	console.log(this.$store)
+      create () {
       	if (this.$refs.form.validate()) {
       		this.loading = true
-		   const { username, password } = this
-		   this.$store.dispatch(AUTH_REQUEST, { username, password })
-		   .then((response) => {
-		     this.$router.push('/')
-		   }).catch((response) => {
-		   		this.errorsnackbar = true
-		   	 	this.loading = false
-		   });
-		}
+      		apiCall({url: '/api/register', data: this.userData, method: 'POST' })
+          .then(resp => {
+          	this.loading = false;
+            this.snackbar = true;
+          })
+          .catch(error => {
+          	this.loading = false;
+            this.errorsnackbar = true;
+          })
+      	}
 	 }
     },
     computed: {

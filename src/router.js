@@ -4,6 +4,7 @@ import Dashboard from './views/Dashboard.vue'
 import Projects from './views/Projects.vue'
 import Team from './views/Team.vue'
 import Login from './components/login.vue'
+import Register from './components/register.vue'
 import store from './store/index'
 
 Vue.use(Router)
@@ -32,6 +33,12 @@ export default new Router({
       path: '/login',
       name: 'Login',
       component: Login,
+      beforeEnter: ifNotAuthenticated,
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: Register,
       beforeEnter: ifNotAuthenticated,
     },
     {
