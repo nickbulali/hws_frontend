@@ -37,6 +37,8 @@
 <script>
 
   export default {
-
+    mounted(){
+      console.log(this.$state)
+    }
   }
 </script>
