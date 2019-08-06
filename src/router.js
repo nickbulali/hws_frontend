@@ -4,6 +4,7 @@ import Dashboard from './views/Dashboard.vue'
 import Projects from './views/Projects.vue'
 import Team from './views/Team.vue'
 import Login from './components/login.vue'
+import ResetPass from './components/resetPass.vue'
 import Register from './components/register.vue'
 import store from './store/index'
 
@@ -39,6 +40,12 @@ export default new Router({
       path: '/register',
       name: 'Register',
       component: Register,
+      beforeEnter: ifNotAuthenticated,
+    },
+    {
+      path: '/reset-password',
+      name: 'ResetPass',
+      component: ResetPass,
       beforeEnter: ifNotAuthenticated,
     },
     {

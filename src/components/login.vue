@@ -1,114 +1,123 @@
 <template>
-	
-	<div id="inspire"> 
-	<v-card class="elevation-3" id="login-card">
-		<v-snackbar v-model="errorsnackbar" :timeout="4000" top color="error">
-			<span>Email/Password wrong or Account is not activated</span>
-			<v-btn flat color="white" @click="errorsnackbar = false">Close</v-btn>
+	<div class="login"> 
+		<v-snackbar v-model="snackbar" :timeout="4000" top color="error">
+			<span>{{message}}</span>
+			<v-btn flat color="white" @click="snackbar = false">Close</v-btn>
 		</v-snackbar>
-		<Loading v-if='authLoading'/>
-		<v-toolbar class="elevation-0">
-        <v-toolbar-title>R-Placement</v-toolbar-title>
-        <v-spacer></v-spacer>
-      	</v-toolbar>
-		  <v-form class="px-3"
-		    ref="form"
-		    v-model="valid"
-		    lazy-validation
-		  >
-			  <v-card-text>
-			    <v-text-field
-			      v-model="username"
-			      :rules="emailRules"
-			      prepend-icon="person"
-			      name="username"
-			      label="E-mail"
-			      required
-			    ></v-text-field>
-			    <v-text-field
-			    	v-model="password"
-				    prepend-icon="lock"
-				    :rules="passwordRules"
-				    name="password"
-				    label="Password"
-				    type="password"
-				  ></v-text-field>
+		<v-layout row justify-center>
+			<v-card class="elevation-0">
+				<Loading v-if='authLoading'/>
+				<v-card-title primary-title>
+					<div class="black--text darken-1 display-2 font-weight-black mb-3" style="font-family: Arial, Helvetica, sans-serif;">Log In</div>
+				</v-card-title>
+				<v-card-text>
+					<v-form
+						ref="form"
+						v-model="valid"
+						lazy-validation
+					>
+						<v-layout row wrap>
+							<v-flex xs12 sm12 md12>
+								<v-text-field
+									v-model="username"
+									:rules="emailRules"
+									prepend-icon="person"
+									name="username"
+									label="E-mail"
+									required
+									outline
+								></v-text-field>
+							</v-flex>
+							<v-flex xs12 sm12 md12>
+								<v-text-field
+									v-model="password"
+									prepend-icon="lock"
+									:rules="passwordRules"
+									name="password"
+									label="Password"
+									type="password"
+									outline
+								></v-text-field>
+							</v-flex>
+						</v-layout>
+					</v-form>
 				</v-card-text>
 				<v-card-actions>
-					<div>
-				        <v-btn flat small to="register">Create an account</v-btn>
-				      </div>
-		        	<v-spacer></v-spacer>
-					<v-btn color="primary" round :disabled="!valid" @click="login" :loading="loading">
-				          Login
-				    </v-btn>
+					<v-layout column class="ma-1">
+					  <v-flex xs12 class="mb-2">
+					    <v-btn large block color="primary" :disabled="!valid" @click="login" :loading="loading">
+								Login
+							</v-btn>
+					  </v-flex>
+					  <v-flex xs12 class="mb-2">
+					    <v-btn block large to="reset-password">
+								Reset Password
+							</v-btn>
+					  </v-flex>
+					  <v-flex xs12 class="mb-2">
+					    <v-btn block large flat to="register">
+								Create an account
+							</v-btn>
+					  </v-flex>
+					</v-layout>
+					
+					
 				</v-card-actions>
-		  </v-form>
-	</v-card>
+			</v-card>
+		</v-layout>
 	</div>
 </template>
-<style>
-  main{
-    padding-top:0px !important;
-  }
-  #login-card{
-    position: absolute;
-    top:20vh;
-    right:30vw;
-    min-width: 400px;
-    width:40vw;
-    max-width: 800px;
-  }
-</style>
-<script>
-  import {AUTH_REQUEST} from '../store/actions/auth'
-  import Loading from './loading'
-  import { mapState } from 'vuex'
-  export default {
-  	name: 'Login',
-    components: {
-      Loading
-    },
-    data: () => {
-    	return {
-    	  errorsnackbar: false,
-    	  loading: false,
-	      valid: true,
-	      password: '',
-	      passwordRules: [
-	        v => !!v || 'Password is required'
-	      ],
-	      username: '',
-	      emailRules: [
-	        v => !!v || 'E-mail is required',
-	        v => /.+@.+/.test(v) || 'E-mail must be valid'
-	      ],
-	  };
-    },
 
-    methods: {
-      reset () {
-        this.$refs.form.reset()
-      },
-      login: function () {
-      	console.log(this.$store)
-      	if (this.$refs.form.validate()) {
-      		this.loading = true
-		   const { username, password } = this
-		   this.$store.dispatch(AUTH_REQUEST, { username, password })
-		   .then((response) => {
-		     this.$router.push('/')
-		   }).catch((response) => {
-		   		this.errorsnackbar = true
-		   	 	this.loading = false
-		   });
-		}
-	 }
-    },
-    computed: {
-	    ...mapState({
-	      authLoading: state => state.auth.status === 'loading',
-	    })
-	  },
-  }
+<script>
+	import {AUTH_REQUEST} from '../store/actions/auth'
+	import Loading from './loading'
+	import { mapState } from 'vuex'
+	export default {
+		name: 'Login',
+		components: {
+			Loading
+		},
+		data: () => {
+			return {
+				snackbar: false,
+				loading: false,
+				valid: true,
+				message: '',
+				password: '',
+				passwordRules: [
+					v => !!v || 'Password is required'
+				],
+				username: '',
+				emailRules: [
+					v => !!v || 'E-mail is required',
+					v => /.+@.+/.test(v) || 'E-mail must be valid'
+				],
+			};
+		},
+		methods: {
+			reset () {
+				this.$refs.form.reset()
+			},
+			login: function () {
+				console.log(this.$store)
+				if (this.$refs.form.validate()) {
+					this.loading = true
+				 	const { username, password } = this
+					this.$store.dispatch(AUTH_REQUEST, { username, password })
+						.then((response) => {
+							this.$router.push('/')
+					 	}).catch((response) => {
+					 		this.message = 'Email/Password wrong or Account is not activated'
+							this.snackbar = true
+							this.loading = false
+					 	});
+				}
+	 		}
+		},
+		computed: {
+			...mapState({
+				authLoading: state => state.auth.status === 'loading',
+			})
+		},
+	}
 </script>
