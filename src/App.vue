@@ -1,5 +1,5 @@
 <template>
-	<v-app class="white">
+	<v-app class="grey lighten-3">
 		<Navbar v-if="['Login', 'Register', 'ResetPass'].indexOf($route.name) == -1"/>
 		<v-content>
 			<router-view></router-view>
@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import Navbar from '@/components/Navbar'
+import Navbar from '@/components/layout/navbar'
 
 export default {
 	name: 'App',

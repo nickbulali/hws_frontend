@@ -1,11 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+
+import Login from './components/auth/login.vue'
+import ResetPass from './components/auth/resetPass.vue'
+import Register from './components/auth/register.vue'
+
 import Dashboard from './views/Dashboard.vue'
-import Projects from './views/Projects.vue'
-import Team from './views/Team.vue'
-import Login from './components/login.vue'
-import ResetPass from './components/resetPass.vue'
-import Register from './components/register.vue'
+
 import store from './store/index'
 
 Vue.use(Router)
@@ -54,17 +55,5 @@ export default new Router({
       component: Dashboard,
       beforeEnter: ifAuthenticated,
     },
-    {
-      path: '/projects',
-      name: 'projects',
-      component: Projects,
-      beforeEnter: ifAuthenticated,
-    },
-    {
-      path: '/team',
-      name: 'team',
-      component: Team,
-      beforeEnter: ifAuthenticated,
-    }
   ]
 })

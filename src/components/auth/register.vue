@@ -91,7 +91,7 @@
 	}
 </style>
 <script>
-	import apiCall from '../utils/api'
+	import apiCall from '@/utils/api'
 	import Loading from './loading'
 	import { mapState } from 'vuex'
 	export default {
