@@ -1,5 +1,5 @@
 import axios from 'axios'
-const base_url ="http://refugee.com"
+const base_url ="http://biker.local"
 const apiCall = ({url, data, method}) => new Promise((resolve, reject) => {
   console.log(url)
   url = base_url+url

@@ -1,5 +1,5 @@
 <template>
-	<v-app class="grey lighten-3">
+	<v-app>
 		<Navbar v-if="['Login', 'Register', 'ResetPass'].indexOf($route.name) == -1"/>
 		<v-content>
 			<router-view></router-view>
