@@ -1,33 +1,25 @@
 <template>
-	<div class="login primary lighten-2"> 
+	<div id="login_div"> 
 		<v-snackbar v-model="snackbar" :timeout="4000" top :color="color">
 			<span>{{message}}</span>
 		</v-snackbar>
 		<v-layout column>
-			<v-flex xs12>
-				<template>
-					<v-parallax
-						height="300"
-						src="https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg"
-					>
-						<div
-							align="center"
-							justify="center"
-							>
-							<div align="center">
-								<v-avatar size="130">
-									<img
-										src="logo.jpg"
-									>
-								</v-avatar>
-								<h4 class="subheading mt-3">Fancy Tag Line</h4>
-							</div>
-						</div>
-					</v-parallax>
-				</template>
+			<v-flex xs12 class="mt-3">
 			</v-flex>
-			<v-flex xs12>
-				<v-card class="elevation-0">
+			<v-flex xs12 class="mt-5">
+			</v-flex>
+			<v-flex xs12 class="mt-5">
+			</v-flex>
+			<v-flex xs12 class="mt-5">
+				<div align="center" class="mt-5">
+					<p class="headline white--text"><b>Welcome Back!</b></p>
+					<p class="white--text">Login to continue HRH Connect</p>
+				</div>
+			</v-flex>
+			<v-flex xs12 class="ma-2">
+				<v-card 
+					color="transparent"
+					class="elevation-0">
 					<v-card-text>
 						<v-form
 							ref="form"
@@ -35,54 +27,57 @@
 							lazy-validation
 						>
 							<v-layout row wrap>
-								<v-flex xs12 sm12 md12>
+								<v-flex xs12>
 									<v-text-field
 										v-model="username"
 										:rules="emailRules"
-										prepend-icon="person"
+										prepend-inner-icon="mail_outline"
 										name="username"
 										label="E-mail"
-										required
-										class="mt-4"
+										outline
+										class="text_field"
 									></v-text-field>
 								</v-flex>
-								<v-flex xs12 sm12 md12>
+								<v-flex xs12>
 									<v-text-field
 										v-model="password"
-										prepend-icon="lock"
+										prepend-inner-icon="lock"
 										:rules="passwordRules"
 										name="password"
 										label="Password"
 										type="password"
-										class="mt-2"
+										class="text_field mt-4"
+										outline
 									></v-text-field>
+								</v-flex>
+								<v-flex xs12 class="mb-5">
+									<div align="right" class="mt-3">
+										<a to="reset-password" class="white--text">Forgot Password?</a>
+									</div>
 								</v-flex>
 							</v-layout>
 						</v-form>
 					</v-card-text>
 					<v-card-actions>
 						<v-layout column class="ma-1">
-						
-						<v-flex xs12 class="mb-5">
-							<div align="right">
-								<v-btn depressed flat class="text-none mb-5" to="reset-password">
-									<a>Forgot Password</a>	
-								</v-btn>
-							</div>
-						</v-flex>
-						<v-flex xs12 class="mt-3">
-							<div align="right">
-								<v-btn depressed fab class="mr-2" color="primary" :disabled="!valid" @click="login" :loading="loading">
-									<v-icon>
-										arrow_right_alt
-									</v-icon>
-								</v-btn>
-							</div>
-						</v-flex>
-						
-						</v-layout>
-						
-						
+							<v-flex xs12 class="mt-5">
+								<div align="right">
+									<v-btn style="opacity: 0.8; box-shadow: -3px 3px 17px 6px rgba(0,0,0,0.75);" large block color="primary text-none" :disabled="!valid" @click="login" :loading="loading">
+										Log In
+										<v-icon>
+											arrow_right_alt
+										</v-icon>
+									</v-btn>
+								</div>
+							</v-flex>
+							<v-flex>
+								<div align="center" class="mt-2">
+									<v-btn small class="mx-2 mb-3 text-none" large flat router to="/register">
+										<a class="white--text">New User? Sign Up</a>
+									</v-btn>									
+								</div>
+							</v-flex>
+						</v-layout>						
 					</v-card-actions>
 				</v-card>
 			</v-flex>
@@ -93,8 +88,13 @@
 
 <script>
 	import {AUTH_REQUEST} from '@/store/actions/auth'
+	import DisableAutocomplete from 'vue-disable-autocomplete';
 	import Loading from './loading'
 	import { mapState } from 'vuex'
+	import Vue from 'vue'
+
+	Vue.use(DisableAutocomplete);
+
 	export default {
 		name: 'Login',
 		components: {

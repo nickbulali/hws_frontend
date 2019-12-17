@@ -4,10 +4,18 @@
 			<span>{{message}}</span>
 			<v-btn flat color="white" @click="snackbar = false">Close</v-btn>
 		</v-snackbar>
-		<v-toolbar app color="primary" flat>
-			<v-toolbar-side-icon class="white--text" @click="drawer = !drawer"></v-toolbar-side-icon>
+		<v-toolbar app color="secondary" flat>
+			<!--<v-toolbar-side-icon class="white--text" @click="drawer = !drawer"></v-toolbar-side-icon>-->
+			<v-avatar
+                  size="36px"
+                >
+                  <img
+                    alt="Avatar"
+                    src="logo.png"
+                  >
+                </v-avatar>
 			<v-toolbar-title class="text-uppercase white--text">
-				<span>HRH</span>
+				<span class="white--text text-none">Healthcare Connect</span>
 			</v-toolbar-title>
 			<v-spacer></v-spacer>
 			<v-menu left>

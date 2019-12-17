@@ -1,74 +1,116 @@
 <template>
-	<div class="register"> 
-	<v-snackbar v-model="snackbar" :timeout="4000" top color="success">
-		<span>Account Created. We've sent you an activation link via email.</span>
-		<v-btn flat color="white" @click="errorsnackbar = false">Close</v-btn>
+	<div class="secondary"> 
+	<v-snackbar v-model="snackbar" :timeout="4000" top :color="color">
+		<span>{{message}}</span>
 	</v-snackbar>
+	</v-label> 
 	<v-layout row justify-center>
-		<v-card class="elevation-0" max-width="500">
+		<v-card class="elevation-0" color="transparent" max-width="500">
 			<Loading v-if='authLoading'/>
 					<v-card-title primary-title>
-						<div class="black--text darken-1 display-2 font-weight-black mb-3" style="font-family: Arial, Helvetica, sans-serif;">Create an Account</div>
+						<v-layout row wrap>
+							<v-flex xs2>
+								<v-btn fab flat to="login">
+									<v-icon>
+										arrow_back
+									</v-icon>
+								</v-btn>
+							</v-flex>
+							<v-flex xs10>
+								<div class="primary--text display-1 font-weight-black mt-3">Healthcare Connect</div>
+							</v-flex>
+						</v-layout>
+						
 					</v-card-title>
+						<v-layout column>
+							<v-flex xs12>
+							<div align="center">
+								<v-img
+									src="logo.png"
+									aspect-ratio="1"
+									max-width="200"
+								></v-img>
+							</div>
+								
+							</v-flex>
+						</v-layout>
 					<v-card-text>
 						<v-form
 							ref="form"
 							v-model="valid"
 							lazy-validation
 						>
-						<v-layout row wrap>
+						<v-layout row wrap class="ma-2">
 							<v-flex xs12 sm12 md12>
 								<v-text-field
 									v-model="userData.name"
 									:rules="nameRules"
-									prepend-icon="person"
+									prepend-inner-icon="person"
 									name="name"
-									label="Username"
+									label="Name"
 									required
-									outline
+									class="text_field_2 mt-4"
+										outline
+										
 								></v-text-field>
 							</v-flex>
 							<v-flex xs12 sm12 md12>
 								<v-text-field
+									
 									v-model="userData.email"
 									:rules="emailRules"
-									prepend-icon="mail"
+									prepend-inner-icon="mail"
 									name="email"
-									label="E-mail"
+									label="Email Address"
 									required
-									outline
+									class="text_field_2 mt-4"
+										outline
 								></v-text-field>
 							</v-flex>
 							<v-flex xs12 sm12 md12>
 								<v-text-field
+									
+									v-model="userData.phone_no"
+									:rules="phoneRules"
+									prepend-inner-icon="local_phone"
+									name="name"
+									label="Phone No."
+									required
+									class="text_field_2 mt-4"
+										outline
+								></v-text-field>
+							</v-flex>
+							<v-flex xs12 sm12 md12>
+								<v-text-field
+									
 									v-model="userData.password"
-									prepend-icon="lock"
+									prepend-inner-icon="lock"
 									:rules="passwordRules"
 									name="password"
 									label="Password"
 									type="password"
-									outline
+									class="text_field_2 mt-4"
+										outline
 								></v-text-field>
 							</v-flex>
-							<v-flex xs12 sm12 md12>
+							<v-flex xs12 sm12 md12 class="mb-5">
 								<v-text-field
+									
 									v-model="confirmpassword"
-									prepend-icon="lock"
+									prepend-inner-icon="lock"
 									:rules="passwordConfirmRules"
 									name="password"
 									label="Confirm Password"
 									type="password"
-									outline
+									class="text_field_2 mt-4"
+										outline
 								></v-text-field>
 							</v-flex>
 						</v-layout>
 							</v-form>
 							<v-card-actions>								
-								<v-btn color="primary" block :disabled="!valid" @click="create" :loading="loading">
-												Create account
-									</v-btn>
-								<v-btn block to="login">
-									Login
+								<v-btn style="opacity: 0.8; box-shadow: -3px 3px 17px 6px rgba(0,0,0,0.75);" large block class="primary text-none my-3" block :disabled="!valid" @click="create" :loading="loading">
+									Register
 								</v-btn>
 							</v-card-actions>
 						
@@ -92,8 +134,12 @@
 </style>
 <script>
 	import apiCall from '@/utils/api'
+	import DisableAutocomplete from 'vue-disable-autocomplete';
 	import Loading from './loading'
 	import { mapState } from 'vuex'
+	import Vue from 'vue'
+
+	Vue.use(DisableAutocomplete);
 	export default {
 		name: 'Register',
 		components: {
@@ -102,7 +148,9 @@
 		data: () => {
 			return {
 				snackbar: false,
-				errorsnackbar: false,
+				message: '',
+				color: '',
+
 				loading: false,
 				valid: true,
 
@@ -114,6 +162,9 @@
 				
 				nameRules: [
 					v => !!v || 'Name is required'
+				],
+				phoneRules: [
+					v => !!v || 'Phone Number is required'
 				],
 				
 				passwordRules: [
@@ -128,6 +179,7 @@
 					name: '',
 					password: '',
 					email: '',
+					phone_no: '',
 				}
 		};
 		},
@@ -138,16 +190,26 @@
 			},
 			create () {
 				if (this.$refs.form.validate()) {
-					this.loading = true
-					apiCall({url: '/api/register', data: this.userData, method: 'POST' })
-					.then(resp => {
-						this.loading = false;
-						this.snackbar = true;
-					})
-					.catch(error => {
-						this.loading = false;
-						this.errorsnackbar = true;
-					})
+					if(this.confirmpassword != this.userData.password){
+						this.message = "Passwords do not match"
+						this.snackbar = true
+						this.color = 'error'
+					}else{
+						this.loading = true
+						apiCall({url: '/api/register', data: this.userData, method: 'POST' })
+						.then(resp => {
+							this.message = "Account Created. We've sent you an activation link via email."
+							this.loading = false
+							this.color = 'success'
+							this.snackbar = true
+						})
+						.catch(error => {
+							this.loading = false
+							this.message = "Email/Phone No. already registered"
+							this.color = 'error'
+							this.snackbar = true
+						})
+					}
 				}
 	 }
 		},

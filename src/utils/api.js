@@ -1,5 +1,5 @@
 import axios from 'axios'
-const base_url ="http://biker.local"
+const base_url = process.env.VUE_APP_API_URL;
 const apiCall = ({url, data, method}) => new Promise((resolve, reject) => {
   console.log(url)
   url = base_url+url
