@@ -3,25 +3,19 @@
 	<v-snackbar v-model="snackbar" :timeout="4000" top :color="color">
 		<span>{{message}}</span>
 	</v-snackbar>
-	</v-label> 
+	<v-toolbar app color="secondary" flat>
+		<v-btn small fab flat to="login">
+			<v-icon class="white--text">
+				arrow_back
+			</v-icon>
+		</v-btn>
+			<v-toolbar-title class="text-uppercase white--text">
+				<span class="white--text text-none">Create an Account</span>
+			</v-toolbar-title>
+			</v-toolbar>
 	<v-layout row justify-center>
 		<v-card class="elevation-0" color="transparent" max-width="500">
 			<Loading v-if='authLoading'/>
-					<v-card-title primary-title>
-						<v-layout row wrap>
-							<v-flex xs2>
-								<v-btn fab flat to="login">
-									<v-icon>
-										arrow_back
-									</v-icon>
-								</v-btn>
-							</v-flex>
-							<v-flex xs10>
-								<div class="primary--text display-1 font-weight-black mt-3">Healthcare Connect</div>
-							</v-flex>
-						</v-layout>
-						
-					</v-card-title>
 						<v-layout column>
 							<v-flex xs12>
 							<div align="center">
@@ -41,22 +35,34 @@
 							lazy-validation
 						>
 						<v-layout row wrap class="ma-2">
-							<v-flex xs12 sm12 md12>
+						<v-flex xs12 sm12 md12>
 								<v-text-field
-									v-model="userData.name"
+									v-model="userData.fname"
 									:rules="nameRules"
 									prepend-inner-icon="person"
-									name="name"
-									label="Name"
+									name="fname"
+									label="First Name"
 									required
 									class="text_field_2 mt-4"
-										outline
+									outline
 										
 								></v-text-field>
 							</v-flex>
 							<v-flex xs12 sm12 md12>
 								<v-text-field
-									
+									v-model="userData.lname"
+									:rules="nameRules"
+									prepend-inner-icon="person"
+									name="lname"
+									label="Last Name"
+									required
+									class="text_field_2 mt-4"
+									outline
+										
+								></v-text-field>
+							</v-flex>
+							<v-flex xs12 sm12 md12>
+								<v-text-field
 									v-model="userData.email"
 									:rules="emailRules"
 									prepend-inner-icon="mail"
@@ -64,25 +70,38 @@
 									label="Email Address"
 									required
 									class="text_field_2 mt-4"
-										outline
+									outline
 								></v-text-field>
 							</v-flex>
 							<v-flex xs12 sm12 md12>
 								<v-text-field
-									
 									v-model="userData.phone_no"
 									:rules="phoneRules"
 									prepend-inner-icon="local_phone"
-									name="name"
+									name="phone"
 									label="Phone No."
 									required
 									class="text_field_2 mt-4"
-										outline
+									outline
 								></v-text-field>
 							</v-flex>
 							<v-flex xs12 sm12 md12>
+								<v-select
+									v-model="userData.account_type"
+									:rules="accountTypeRules"
+									:items="allRoles"
+									item-value="id"
+									item-text="name"
+									prepend-inner-icon="how_to_reg"
+									name="accountType"
+									label="Account Type"
+									required
+									class="text_field_2 mt-4"
+									outline
+								></v-select>
+							</v-flex>
+							<v-flex xs12 sm12 md12>
 								<v-text-field
-									
 									v-model="userData.password"
 									prepend-inner-icon="lock"
 									:rules="passwordRules"
@@ -90,12 +109,11 @@
 									label="Password"
 									type="password"
 									class="text_field_2 mt-4"
-										outline
+									outline
 								></v-text-field>
 							</v-flex>
 							<v-flex xs12 sm12 md12 class="mb-5">
 								<v-text-field
-									
 									v-model="confirmpassword"
 									prepend-inner-icon="lock"
 									:rules="passwordConfirmRules"
@@ -103,7 +121,7 @@
 									label="Confirm Password"
 									type="password"
 									class="text_field_2 mt-4"
-										outline
+									outline
 								></v-text-field>
 							</v-flex>
 						</v-layout>
@@ -119,24 +137,11 @@
 	</v-layout>
 	</div>
 </template>
-<style>
-	main{
-		padding-top:0px !important;
-	}
-	#login-card{
-		position: absolute;
-		top:20vh;
-		right:30vw;
-		min-width: 400px;
-		width:40vw;
-		max-width: 800px;
-	}
-</style>
 <script>
 	import apiCall from '@/utils/api'
 	import DisableAutocomplete from 'vue-disable-autocomplete';
 	import Loading from './loading'
-	import { mapState } from 'vuex'
+	import { mapState, mapGetters, mapActions } from 'vuex'
 	import Vue from 'vue'
 
 	Vue.use(DisableAutocomplete);
@@ -159,14 +164,15 @@
 				passwordConfirmRules: [
 					v => !!v || 'Password Confirm is required'
 				],
-				
 				nameRules: [
 					v => !!v || 'Name is required'
 				],
 				phoneRules: [
 					v => !!v || 'Phone Number is required'
 				],
-				
+				accountTypeRules: [
+					v => !!v || 'Account Type is required'
+				],
 				passwordRules: [
 					v => !!v || 'Password is required'
 				],
@@ -176,15 +182,20 @@
 					v => /.+@.+/.test(v) || 'E-mail must be valid'
 				],
 				userData: {
-					name: '',
+					fname: '',
+					lname: '',
 					password: '',
+					account_type: '',
 					email: '',
 					phone_no: '',
 				}
 		};
 		},
-
+		created(){
+			this.fetchRoles()
+		},
 		methods: {
+			...mapActions(['fetchRoles']),
 			reset () {
 				this.$refs.form.reset()
 			},
@@ -214,6 +225,7 @@
 	 }
 		},
 		computed: {
+			...mapGetters(['allRoles']),
 			...mapState({
 				authLoading: state => state.auth.status === 'loading',
 			})

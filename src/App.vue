@@ -4,7 +4,7 @@
 		<v-content>
 			<router-view></router-view>
 		</v-content>
-		<BottomNav v-if="['login', 'register', 'ResetPass'].indexOf($route.name) == -1"/>
+		<BottomNav v-if="['Login', 'Register', 'ResetPass'].indexOf($route.name) == -1"/>
 	</v-app>
 </template>
 
