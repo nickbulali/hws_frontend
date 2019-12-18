@@ -70,10 +70,30 @@
 </template>
 
 <script>
-  import { mapGetters, mapState, mapActions } from 'vuex'
+  import apiCall from '@/utils/api'
+  import Vue from 'vue'
+  import { mapGetters, mapActions } from 'vuex'
   export default {
-    mounted(){
-      
+    data () {
+      return {
+        latitude: '-1.2921',
+        longitude: '36.8219',
+        location:{}
+      }
+    },
+    created(){
+      navigator.geolocation.getCurrentPosition(this.currentPosition);
+    },
+    methods:{
+      ...mapActions(['closestStation']),
+      currentPosition(position){
+        var vm = this
+        vm.latitude = position.coords.latitude.toString()
+        vm.longitude = position.coords.longitude.toString()
+        // Vue.set(this,"longitude", position.coords.longitude.toString())
+        // Vue.set(this,"latitude", position.coords.latitude.toString())
+      },
     }
+
   }
 </script>

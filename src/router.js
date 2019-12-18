@@ -5,7 +5,8 @@ import Login from './components/auth/login.vue'
 import ResetPass from './components/auth/resetPass.vue'
 import Register from './components/auth/register.vue'
 
-import Dashboard from './views/Dashboard.vue'
+import Dashboard from './views/dashboard.vue'
+import MapView from './views/Map/index.vue'
 
 import store from './store/index'
 
@@ -53,6 +54,12 @@ export default new Router({
       path: '/',
       name: 'dashboard',
       component: Dashboard,
+      beforeEnter: ifAuthenticated,
+    },
+    {
+      path: '/map',
+      name: 'map',
+      component: MapView,
       beforeEnter: ifAuthenticated,
     },
   ]
