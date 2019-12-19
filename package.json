@@ -5,11 +5,25 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "cordova-build-android": "cross-env CORDOVA_PLATFORM=android vue-cli-service cordova-build-android",
+    "cordova-build-browser": "cross-env CORDOVA_PLATFORM=browser vue-cli-service cordova-build-browser",
+    "cordova-build-ios": "cross-env CORDOVA_PLATFORM=ios vue-cli-service cordova-build-ios",
+    "cordova-build-only-www-android": "cross-env CORDOVA_PLATFORM=android vue-cli-service cordova-build-only-www-android",
+    "cordova-build-only-www-browser": "cross-env CORDOVA_PLATFORM=browser vue-cli-service cordova-build-only-www-browser",
+    "cordova-build-only-www-ios": "cross-env CORDOVA_PLATFORM=ios vue-cli-service cordova-build-only-www-ios",
+    "cordova-build-only-www-osx": "cross-env CORDOVA_PLATFORM=osx vue-cli-service cordova-build-only-www-osx",
+    "cordova-build-osx": "cross-env CORDOVA_PLATFORM=osx vue-cli-service cordova-build-osx",
+    "cordova-prepare": "vue-cli-service cordova-prepare",
+    "cordova-serve-android": "cross-env CORDOVA_PLATFORM=android vue-cli-service cordova-serve-android",
+    "cordova-serve-browser": "cross-env CORDOVA_PLATFORM=browser vue-cli-service cordova-serve-browser",
+    "cordova-serve-ios": "cross-env CORDOVA_PLATFORM=ios vue-cli-service cordova-serve-ios",
+    "cordova-serve-osx": "cross-env CORDOVA_PLATFORM=osx vue-cli-service cordova-serve-osx"
   },
   "dependencies": {
     "@casl/ability": "^3.3.0",
     "@casl/vue": "^0.5.1",
+    "@mauron85/cordova-plugin-background-geolocation": "^3.1.0",
     "axios": "^0.18.1",
     "date-fns": "^1.30.1",
     "dotenv": "^8.2.0",
@@ -32,6 +46,7 @@
     "eslint-plugin-vue": "^5.0.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",
+    "vue-cli-plugin-cordova": "^2.3.7",
     "vue-cli-plugin-vuetify": "^0.4.6",
     "vue-template-compiler": "^2.5.21",
     "vuetify-loader": "^1.0.5"
