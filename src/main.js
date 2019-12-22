@@ -19,3 +19,10 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app')
+
+document.addEventListener("deviceready", () => {
+  console.log("Ready, Render the App1");  
+  StatusBar.backgroundColorByHexString('#4C729A');
+  //NavigationBar.backgroundColorByHexString('#ffffff');
+
+});
