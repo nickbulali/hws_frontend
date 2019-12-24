@@ -4,6 +4,8 @@ import user from './modules/user'
 import auth from './modules/auth'
 import roles from  './modules/roles'
 
+import workerCategories from './modules/workerCategories'
+
 import VuexPersist from 'vuex-persist'
 import { abilityPlugin, ability as appAbility } from './ability'
 
@@ -30,7 +32,8 @@ export default new Vuex.Store({
   modules: {
     user,
     auth,
-    roles
+    roles,
+    workerCategories
   },
   strict: false,
 })

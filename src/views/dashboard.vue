@@ -20,7 +20,7 @@
           icon
           dark
           color="secondary"
-          v-if="progress != 'Time' && progress != 'Category'"
+          v-if="progress != 'Time' && progress != 'Category' && progress != 'Worker List'"
         >
           <v-icon color="secondary">keyboard_backspace</v-icon>
         </v-btn>
@@ -40,6 +40,14 @@
         >
           <v-icon>keyboard_backspace</v-icon>
         </v-btn>
+        <v-btn
+          icon
+          dark
+          v-if="progress == 'Worker List'"
+          @click="showCategories"
+        >
+          <v-icon>keyboard_backspace</v-icon>
+        </v-btn>
         <v-spacer></v-spacer>
         <v-toolbar-title>New Request</v-toolbar-title>
         <v-spacer></v-spacer>
@@ -56,7 +64,7 @@
         <div v-if="progress == 'Location'">
           <v-layout column>
             <v-flex xs12>
-              <v-map ref="myMapRef" style="position: absolute; width: 92%; height: 85%; z-index: 2" :center="[latitude, longitude]" :zoom=15>
+              <v-map ref="myMapRef" style="position: absolute; width: 92%; height: 85%; z-index: 2" :center="[latitude, longitude]" :zoom="15">
                 <v-icondefault class="mt-5"></v-icondefault>
                 <v-tilelayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></v-tilelayer>
                 <v-marker  
@@ -67,7 +75,7 @@
                 >
                   <v-popup content="Me"></v-popup>
                 </v-marker>
-                  <v-btn class="secondary white--text text-none" style="position: absolute; z-index: 500; bottom: 5%;" block  @click="newPos">Next</v-btn>
+                  <v-btn class="primary white--text text-none" style="position: absolute; z-index: 500; bottom: 5%;" block  @click="newPos">Next</v-btn>
               </v-map>
             </v-flex>
           </v-layout>
@@ -152,7 +160,7 @@
               </v-flex>
             </v-container>
           </v-layout>
-          <v-btn class="secondary white--text text-none mx-5" style="position: absolute; bottom: 5%; left:-12%"  block @click="selectCategory">Next</v-btn>
+          <v-btn class="primary white--text text-none mx-5" style="position: absolute; bottom: 5%; left:-12%"  block @click="selectCategory">Next</v-btn>
         </div>
         <div v-if="progress == 'Category'">
           <v-container>
@@ -162,62 +170,87 @@
               </v-flex>
               <v-flex xs12>
                 <v-layout column>
-                  <v-flex xs12>
+                  <v-flex xs12  class="mb-2">
                     <v-layout row wrap>
-                      <v-flex xs6 class="mt-2">
+                      <v-flex xs5 class="mt-2">
                       <v-card
+                          elevation="0"
                           @click="pickCategory(1)"
-                          :color="generalColor" class="white--text mx-1"
-                        >
-                          <v-card-text>
-                          <div align="center" class="mt-3">
-                              <v-img
-                                src="general.png"
-                                aspect-ratio="1"
-                              ></v-img>
-                            </div>
-                            <div>
-                              <div class="secondary--text headline mb-1">General Doctor</div>
-                            </div>
-                          </v-card-text>
-                        </v-card>
-                      </v-flex>
-                      <v-flex xs6 class="mt-2">
-                      <v-card
-                          @click="pickCategory(2)"
-                          :color="specializedColor" class="white--text mx-1"
+                          :color="doctorColor" class="white--text login-circle"
                         >
                           <v-card-text>
                           <div align="center" class="mt-3">
                               <v-img
                                 src="doctor.png"
-                                aspect-ratio="1"
+                                aspect-ratio="0.7"
                               ></v-img>
                             </div>
                             <div>
-                              <div class="secondary--text headline mb-1">Specialised Doctor</div>
+                              <div align="center" class="secondary--text title mb-1 mt-2">Doctor</div>
+                            </div>
+                          </v-card-text>
+                        </v-card>
+                      </v-flex>
+                      <v-divider vertical class="mx-4"></v-divider>
+                      <v-flex xs5 class="mt-2">
+                        <v-card
+                          elevation="0"
+                          @click="pickCategory(2)"
+                          :color="nurseColor" class="white--text login-circle"
+                        >
+                          <v-card-text>
+                          <div align="center" class="mt-3">
+                              <v-img
+                                src="nurse.png"
+                                aspect-ratio="0.7"
+                              ></v-img>
+                            </div>
+                            <div>
+                              <div align="center" class="secondary--text title mb-1 mt-2">Nurse</div>
                             </div>
                           </v-card-text>
                         </v-card>
                       </v-flex>
                     </v-layout>
                   </v-flex>
+                  <v-divider class="my-2"></v-divider>
                   <v-flex xs12 class="mt-2">
                     <v-layout row wrap>
-                      <v-flex xs6>
-                      <v-card
+                      <v-flex xs5>
+                        <v-card
+                          elevation="0"
                           @click="pickCategory(3)"
-                          :color="nurseColor" class="white--text mx-1"
+                          :color="clinicalOfficerColor" class="white--text login-circle"
                         >
                           <v-card-text>
                           <div align="center" class="mt-3">
                               <v-img
-                                src="doctor.png"
-                                aspect-ratio="1"
+                                src="clinical.png"
+                                aspect-ratio="0.7"
                               ></v-img>
                             </div>
                             <div>
-                              <div class="secondary--text headline mb-1">Nurse</div>
+                              <div align="center" class="secondary--text title mb-1 mt-2">Clinical Officer</div>
+                            </div>
+                          </v-card-text>
+                        </v-card>
+                      </v-flex>
+                      <v-divider vertical class="mx-4"></v-divider>
+                      <v-flex xs5>
+                        <v-card
+                          elevation="0"
+                          @click="pickCategory(4)"
+                          :color="pharmacistColor" class="white--text login-circle"
+                        >
+                          <v-card-text>
+                          <div align="center" class="mt-3">
+                              <v-img
+                                src="pharmacist.png"
+                                aspect-ratio="0.7"
+                              ></v-img>
+                            </div>
+                            <div>
+                              <div align="center" class="secondary--text title mb-1 mt-2 mb-4">Pharmacist</div>
                             </div>
                           </v-card-text>
                         </v-card>
@@ -226,16 +259,54 @@
                   </v-flex>
                 </v-layout>
               </v-flex>
+              <v-flex 12>
+                <v-btn class="primary white--text text-none mx-5" style="position: absolute; bottom: 5%; left:-12%"  block @click="listWorkers" :loading="loading">Next</v-btn>
+              </v-flex>
             </v-layout>
           </v-container>
         </div>
-        
-    
+        <div v-if="progress == 'Worker List'">
+          
+            <v-layout column>
+              <v-flex xs12 v-for="(worker, index) in workers" :key="index" class="mb-1">
+                <v-card
+                  elevation="0"
+                  class="grey lighten-4 login-circle pa-2"
+                >
+                  <v-layout row wrap>
+                    <v-flex xs3>
+                      <v-avatar
+                        size="70"
+                        color="grey lighten-4"
+                      >
+                        <img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" alt="avatar">
+                      </v-avatar>
+                    </v-flex>
+                    <v-flex xs9>
+                      <div><b>{{worker.first_name}} {{worker.last_name}}</b></div>
+                      <div class="grey--text">{{worker.health_worker_profile.worker_category.name}} - {{worker.health_worker_profile.worker_sub_category.name}}</div>
+                      <div>
+                        <v-rating
+                        :value="4.5"
+                        color="amber"
+                        dense
+                        half-increments
+                        readonly
+                        size="14"
+                        ></v-rating>
+                      </div>
+                      <div class="mt-2">{{worker.health_worker_profile.bio.substring(0,80)+".."}}</div>
+                    </v-flex>
+                  </v-layout>
+                </v-card>
+              </v-flex>
+            </v-layout>
+        </div>
       </v-card-text>
     </v-card>
   </v-dialog>
 
-  	<v-container class="my-5">
+  	<v-container class="my-2">
   		<v-layout column>
   		  <v-flex xs12>
           <div align="center" class="mt-3">
@@ -254,8 +325,8 @@
                   <v-flex xs3>
                     <div align="center" class="mt-3">
                       <v-img
-                        src="doctor.png"
-                        aspect-ratio="1"
+                        src="pin.png"
+                        aspect-ratio="0.8"
                         max-width="200"
                       ></v-img>
                     </div>
@@ -277,9 +348,9 @@
               <div class="primary login-circle mt-3">
                 <v-layout row wrap>
                   <v-flex xs3>
-                    <div align="center" class="mt-3">
+                    <div align="center" class="mt-3 mb-4">
                       <v-img
-                        src="doctor.png"
+                        src="map.png"
                         aspect-ratio="1"
                         max-width="200"
                       ></v-img>
@@ -319,7 +390,7 @@ html, body {
   import apiCall from '@/utils/api'
   import Vue from 'vue'
   import { mapGetters, mapActions } from 'vuex'
-  import { USER_REQUEST, USER_ERROR, USER_SUCCESS } from '@/store/actions/user'
+  import { USER_REQUEST } from '@/store/actions/user'
 
   import * as Vue2Leaflet from 'vue2-leaflet'
   import { latLng, Icon, icon } from 'leaflet'
@@ -353,10 +424,12 @@ html, body {
         snackbar: false,
         message: '',
         snackbarColor: '',
+        loading: false,
 
-        generalColor: 'transparent',
-        specializedColor: 'transparent',
+        doctorColor: 'transparent',
         nurseColor: 'transparent',
+        clinicalOfficerColor: 'transparent',
+        pharmacistColor: 'transparent',
 
         progress: 'Location',
 
@@ -374,7 +447,9 @@ html, body {
           from: null,
           to: null,
           category: ''
-        }
+        },
+
+        workers: []
       }
     },
     created(){
@@ -385,7 +460,7 @@ html, body {
       
     },
     methods:{
-      ...mapActions(['closestStation', 'USER_REQUEST']),
+      ...mapActions(['USER_REQUEST']),
       allowedStep: m => m % 5 === 0,
       currentPosition(position){
         var vm = this
@@ -402,6 +477,10 @@ html, body {
       showClock(){
         this.progress = 'Time'
         this.progressBar = 25
+      },
+      showCategories(){
+        this.progress = 'Category'
+        this.progressBar = 50
       },
       newPos(){
         this.requestData.location = this.$refs.myMarker.mapObject.getLatLng()
@@ -422,6 +501,22 @@ html, body {
         }
         
       },
+      listWorkers(){
+        this.loading = true
+        apiCall({url: '/api/userRequest?type=new', data: this.requestData, method: 'POST' })
+						.then(resp => {
+							this.loading = false
+              this.workers = resp.data
+              this.progress = 'Worker List'
+              this.progressBar = 75
+						})
+						.catch(error => {
+							this.loading = false
+							this.message = "An Error Occured, Please Try Again."
+							this.color = 'error'
+							this.snackbar = true
+						})
+      },
       newRequest(){
         this.requestDialog = true
       },
@@ -429,41 +524,60 @@ html, body {
         if(category == 1){
           if(this.requestData.category == 1){
             this.requestData.category = ''
-            this.generalColor = 'transparent'
-            this.specializedColor = 'transparent'
+            this.doctorColor = 'transparent'
             this.nurseColor = 'transparent'
+            this.clinicalOfficerColor = 'transparent'
+            this.pharmacistColor = 'transparent'
           } else {
             this.requestData.category = 1
-            this.generalColor = 'primary'
-            this.specializedColor = 'transparent'
+            this.doctorColor = 'primary'
             this.nurseColor = 'transparent'
+            this.clinicalOfficerColor = 'transparent'
+            this.pharmacistColor = 'transparent'
           }
         } else if(category == 2){
           if(this.requestData.category == 2){
             this.requestData.category = ''
-            this.specializedColor = 'transparent'
-            this.generalColor = 'transparent'
             this.nurseColor = 'transparent'
+            this.doctorColor = 'transparent'
+            this.clinicalOfficerColor = 'transparent'
+            this.pharmacistColor = 'transparent'
           } else {
             this.requestData.category = 2
-            this.specializedColor = 'primary'
-            this.generalColor = 'transparent'
-            this.nurseColor = 'transparent'
+            this.nurseColor = 'primary'
+            this.doctorColor = 'transparent'
+            this.clinicalOfficerColor = 'transparent'
+            this.pharmacistColor = 'transparent'
           }
         } else if(category == 3){
           if(this.requestData.category == 3){
             this.requestData.category = ''
+            this.clinicalOfficerColor = 'transparent'
+            this.doctorColor = 'transparent'
             this.nurseColor = 'transparent'
-             this.generalColor = 'transparent'
-             this.specializedColor = 'transparent'
+            this.pharmacistColor = 'transparent'
           } else {
             this.requestData.category = 3
-            this.nurseColor = 'primary'
-             this.generalColor = 'transparent'
-             this.specializedColor = 'transparent'
+            this.clinicalOfficerColor = 'primary'
+            this.doctorColor = 'transparent'
+            this.nurseColor = 'transparent'
+            this.pharmacistColor = 'transparent'
           }
-        }
-          
+        } else if(category == 4){
+          if(this.requestData.category == 4){
+            this.requestData.category = ''
+            this.clinicalOfficerColor = 'transparent'
+            this.doctorColor = 'transparent'
+            this.nurseColor = 'transparent'
+            this.pharmacistColor = 'transparent'
+          } else {
+            this.requestData.category = 4
+            this.clinicalOfficerColor = 'transparent'
+            this.doctorColor = 'transparent'
+            this.nurseColor = 'transparent'
+            this.pharmacistColor = 'primary'
+          }
+        }         
 
       }
     },

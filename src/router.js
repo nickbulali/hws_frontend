@@ -8,6 +8,8 @@ import Register from './components/auth/register.vue'
 import Dashboard from './views/dashboard.vue'
 import MapView from './views/Map/index.vue'
 
+import Profile from './views/profile/index.vue'
+
 import store from './store/index'
 
 Vue.use(Router)
@@ -60,6 +62,12 @@ export default new Router({
       path: '/map',
       name: 'map',
       component: MapView,
+      beforeEnter: ifAuthenticated,
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: Profile,
       beforeEnter: ifAuthenticated,
     },
   ]

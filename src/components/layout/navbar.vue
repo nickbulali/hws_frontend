@@ -38,13 +38,13 @@
 					<v-icon color="white">more_vert</v-icon>
 				</v-btn>
 				<v-list>
-					<v-list-tile @click="">
-					<v-list-tile-title>
-						<v-icon left>
-						person
-						</v-icon>
-						Profile
-					</v-list-tile-title>
+					<v-list-tile router to="/profile">
+						<v-list-tile-title>
+							<v-icon left>
+							person
+							</v-icon>
+							Profile
+						</v-list-tile-title>
 					</v-list-tile>
 					<v-list-tile  @click="signOut">
 					<v-list-tile-title>
