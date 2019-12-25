@@ -82,7 +82,6 @@
         </div>
         <div v-if="progress == 'Time'">
           <v-layout column>
-            <v-container>
               <v-flex xs12>
                 <p class="headline">Pick Time</p>
               </v-flex>
@@ -158,149 +157,158 @@
                   </v-menu>
                 </div>
               </v-flex>
-            </v-container>
           </v-layout>
           <v-btn class="primary white--text text-none mx-5" style="position: absolute; bottom: 5%; left:-12%"  block @click="selectCategory">Next</v-btn>
         </div>
         <div v-if="progress == 'Category'">
-          <v-container>
-            <v-layout column>
-              <v-flex xs12>
-                <p class="headline">Pick Category</p>
-              </v-flex>
-              <v-flex xs12>
-                <v-layout column>
-                  <v-flex xs12  class="mb-2">
-                    <v-layout row wrap>
-                      <v-flex xs5 class="mt-2">
-                      <v-card
-                          elevation="0"
-                          @click="pickCategory(1)"
-                          :color="doctorColor" class="white--text login-circle"
-                        >
-                          <v-card-text>
-                          <div align="center" class="mt-3">
-                              <v-img
-                                src="doctor.png"
-                                aspect-ratio="0.7"
-                              ></v-img>
-                            </div>
-                            <div>
-                              <div align="center" class="secondary--text title mb-1 mt-2">Doctor</div>
-                            </div>
-                          </v-card-text>
-                        </v-card>
-                      </v-flex>
-                      <v-divider vertical class="mx-4"></v-divider>
-                      <v-flex xs5 class="mt-2">
-                        <v-card
-                          elevation="0"
-                          @click="pickCategory(2)"
-                          :color="nurseColor" class="white--text login-circle"
-                        >
-                          <v-card-text>
-                          <div align="center" class="mt-3">
-                              <v-img
-                                src="nurse.png"
-                                aspect-ratio="0.7"
-                              ></v-img>
-                            </div>
-                            <div>
-                              <div align="center" class="secondary--text title mb-1 mt-2">Nurse</div>
-                            </div>
-                          </v-card-text>
-                        </v-card>
-                      </v-flex>
-                    </v-layout>
-                  </v-flex>
-                  <v-divider class="my-2"></v-divider>
-                  <v-flex xs12 class="mt-2">
-                    <v-layout row wrap>
-                      <v-flex xs5>
-                        <v-card
-                          elevation="0"
-                          @click="pickCategory(3)"
-                          :color="clinicalOfficerColor" class="white--text login-circle"
-                        >
-                          <v-card-text>
-                          <div align="center" class="mt-3">
-                              <v-img
-                                src="clinical.png"
-                                aspect-ratio="0.7"
-                              ></v-img>
-                            </div>
-                            <div>
-                              <div align="center" class="secondary--text title mb-1 mt-2">Clinical Officer</div>
-                            </div>
-                          </v-card-text>
-                        </v-card>
-                      </v-flex>
-                      <v-divider vertical class="mx-4"></v-divider>
-                      <v-flex xs5>
-                        <v-card
-                          elevation="0"
-                          @click="pickCategory(4)"
-                          :color="pharmacistColor" class="white--text login-circle"
-                        >
-                          <v-card-text>
-                          <div align="center" class="mt-3">
-                              <v-img
-                                src="pharmacist.png"
-                                aspect-ratio="0.7"
-                              ></v-img>
-                            </div>
-                            <div>
-                              <div align="center" class="secondary--text title mb-1 mt-2 mb-4">Pharmacist</div>
-                            </div>
-                          </v-card-text>
-                        </v-card>
-                      </v-flex>
-                    </v-layout>
-                  </v-flex>
-                </v-layout>
-              </v-flex>
-              <v-flex 12>
-                <v-btn class="primary white--text text-none mx-5" style="position: absolute; bottom: 5%; left:-12%"  block @click="listWorkers" :loading="loading">Next</v-btn>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </div>
-        <div v-if="progress == 'Worker List'">
-          
-            <v-layout column>
-              <v-flex xs12 v-for="(worker, index) in workers" :key="index" class="mb-1">
-                <v-card
-                  elevation="0"
-                  class="grey lighten-4 login-circle pa-2"
-                >
+          <v-layout column>
+            <v-flex xs12>
+              <p class="headline">Pick Category</p>
+            </v-flex>
+            <v-flex xs12>
+              <v-layout column>
+                <v-flex xs12  class="mb-2">
                   <v-layout row wrap>
-                    <v-flex xs3>
-                      <v-avatar
-                        size="70"
-                        color="grey lighten-4"
+                    <v-flex xs5 class="mt-2">
+                    <v-card
+                        elevation="0"
+                        @click="pickCategory(1)"
+                        :color="doctorColor" class="white--text login-circle"
                       >
-                        <img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" alt="avatar">
-                      </v-avatar>
+                        <v-card-text>
+                        <div align="center" class="mt-3">
+                            <v-img
+                              src="doctor.png"
+                              aspect-ratio="0.7"
+                            ></v-img>
+                          </div>
+                          <div>
+                            <div align="center" class="secondary--text title mb-1 mt-2">Doctor</div>
+                          </div>
+                        </v-card-text>
+                      </v-card>
                     </v-flex>
-                    <v-flex xs9>
-                      <div><b>{{worker.first_name}} {{worker.last_name}}</b></div>
-                      <div class="grey--text">{{worker.health_worker_profile.worker_category.name}} - {{worker.health_worker_profile.worker_sub_category.name}}</div>
-                      <div>
-                        <v-rating
-                        :value="4.5"
-                        color="amber"
-                        dense
-                        half-increments
-                        readonly
-                        size="14"
-                        ></v-rating>
-                      </div>
-                      <div class="mt-2">{{worker.health_worker_profile.bio.substring(0,80)+".."}}</div>
+                    <v-divider vertical class="mx-4"></v-divider>
+                    <v-flex xs5 class="mt-2">
+                      <v-card
+                        elevation="0"
+                        @click="pickCategory(2)"
+                        :color="nurseColor" class="white--text login-circle"
+                      >
+                        <v-card-text>
+                        <div align="center" class="mt-3">
+                            <v-img
+                              src="nurse.png"
+                              aspect-ratio="0.7"
+                            ></v-img>
+                          </div>
+                          <div>
+                            <div align="center" class="secondary--text title mb-1 mt-2">Nurse</div>
+                          </div>
+                        </v-card-text>
+                      </v-card>
                     </v-flex>
                   </v-layout>
-                </v-card>
-              </v-flex>
-            </v-layout>
+                </v-flex>
+                <v-flex xs12 class="mt-1">
+                  <v-layout row wrap>
+                    <v-flex xs5>
+                      <v-divider></v-divider>
+                      <v-card
+                        elevation="0"
+                        @click="pickCategory(3)"
+                        :color="clinicalOfficerColor" class="white--text login-circle"
+                      >
+                        <v-card-text>
+                        <div align="center" class="mt-3">
+                            <v-img
+                              src="clinical.png"
+                              aspect-ratio="0.7"
+                            ></v-img>
+                          </div>
+                          <div>
+                            <div align="center" class="secondary--text title mb-1 mt-2">Clinical Officer</div>
+                          </div>
+                        </v-card-text>
+                      </v-card>
+                    </v-flex>
+                    <v-divider vertical class="mx-4 mt-3"></v-divider>
+                    <v-flex xs5>
+                      <v-divider></v-divider>
+                      <v-card
+                        elevation="0"
+                        @click="pickCategory(4)"
+                        :color="pharmacistColor" class="white--text login-circle"
+                      >
+                        <v-card-text>
+                        <div align="center" class="mt-3">
+                            <v-img
+                              src="pharmacist.png"
+                              aspect-ratio="0.7"
+                            ></v-img>
+                          </div>
+                          <div>
+                            <div align="center" class="secondary--text title mb-1 mt-2 mb-4">Pharmacist</div>
+                          </div>
+                        </v-card-text>
+                      </v-card>
+                    </v-flex>
+                  </v-layout>
+                </v-flex>
+              </v-layout>
+            </v-flex>
+            <v-flex 12>
+              <v-btn class="primary white--text text-none mx-5" style="position: absolute; bottom: 5%; left:-12%"  block @click="listWorkers" :loading="loading">Next</v-btn>
+            </v-flex>
+          </v-layout>
+        </div>
+        <div v-if="progress == 'Worker List'">
+          <v-layout column>
+            <v-flex xs12 v-for="(worker, index) in workers" :key="index" class="mb-1">
+              <v-card
+                elevation="0"
+                class="grey lighten-4 login-circle pa-2"
+              >
+                <v-layout row wrap>
+                  <v-flex xs3>
+                    <v-avatar
+                      size="70"
+                      color="grey lighten-4"
+                    >
+                      <img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" alt="avatar">
+                    </v-avatar>
+                  </v-flex>
+                  <v-flex xs9>
+                    <div><b>{{worker.first_name}} {{worker.last_name}}</b></div>
+                    <div class="grey--text">{{worker.health_worker_profile.worker_category.name}} - {{worker.health_worker_profile.worker_sub_category.name}}</div>
+                    <div>
+                      <v-rating
+                      :value="4.5"
+                      color="amber"
+                      dense
+                      half-increments
+                      readonly
+                      size="14"
+                      ></v-rating>
+                    </div>
+                    <div class="mt-2">{{worker.health_worker_profile.bio.substring(0,80)+".."}}</div>
+                    <div class="mt-1">2.7Km</div>
+                  </v-flex>
+                </v-layout>
+              </v-card>
+            </v-flex>
+            <v-flex xs12>
+              <v-btn block depressed class="primary white--text" @click="sheet = !sheet">
+                Filters
+              </v-btn>
+            </v-flex>
+            <v-bottom-sheet v-model="sheet">
+              <v-sheet class="text-center" height="200px">
+                
+                <div>Search Filters go here</div>
+              </v-sheet>
+            </v-bottom-sheet>
+          </v-layout>           
         </div>
       </v-card-text>
     </v-card>
@@ -419,6 +427,7 @@ html, body {
         requestDialog: false,
         menu1: false,
         menu2: false,
+        sheet: false,
         //showMap: false,
 
         snackbar: false,
