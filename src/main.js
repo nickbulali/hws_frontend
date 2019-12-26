@@ -23,8 +23,9 @@ new Vue({
 }).$mount('#app')
 
 document.addEventListener("deviceready", () => {
-
+	console.log("here")
   window.FirebasePlugin.getToken(function(token) {
+	  
     var formData = new FormData();
     formData.append("fcmToken", token);
 
@@ -34,19 +35,19 @@ document.addEventListener("deviceready", () => {
         }).catch((error) => {
           reject(new Error(error))
         });
-    // axios.post("http://api.health.co.ke/api/register-fcmtoken",formData).then((response) => {
-    //       resolve(response.data)
-    //     }).catch((error) => {
-    //       reject(new Error(error))
-    //     });
+     axios.post("http://api.health.co.ke/api/userDevice",formData).then((response) => {
+           resolve(response.data)
+         }).catch((error) => {
+           reject(new Error(error))
+         });
 
-    // apiCall({url: '/api/register-fcmtoken', data: formData, method: 'POST' })
-    // .then(resp => {
+     apiCall({url: '/api/userDevice', data: formData, method: 'POST' })
+     .then(resp => {
 
-    // })
-    // .catch(error => {
+     })
+     .catch(error => {
 
-    // })
+     })
     console.log(token);
   }, function(error) {
     console.error(error);

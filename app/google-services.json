@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "419426296639",
+    "firebase_url": "https://healthcare-connect-1898c.firebaseio.com",
+    "project_id": "healthcare-connect-1898c",
+    "storage_bucket": "healthcare-connect-1898c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:419426296639:android:72061c640174e982eae98a",
+        "android_client_info": {
+          "package_name": "com.vue.healthcareconnect.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "419426296639-ngp4delgnhm3qt5cp46n2vpnosdni91h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDwOgd26ELBCARydH-LZXwdenJJlNpXSk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "419426296639-ngp4delgnhm3qt5cp46n2vpnosdni91h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
