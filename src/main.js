@@ -30,11 +30,6 @@ document.addEventListener("deviceready", () => {
     formData.append("fcmToken", token);
 
     axios.defaults.headers.common['Authorization'] = localStorage.getItem('user-token');
-    axios.post("https://webhook.site/994ceb10-492b-4ae6-86c9-fe8a72363389",formData).then((response) => {
-          resolve(response.data)
-        }).catch((error) => {
-          reject(new Error(error))
-        });
      axios.post("http://api.health.co.ke/api/userDevice",formData).then((response) => {
            resolve(response.data)
          }).catch((error) => {
