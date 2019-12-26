@@ -22,22 +22,11 @@ new Vue({
   render: h => h(App)
 }).$mount('#app')
 
-var formData = new FormData();
-    formData.append("fcmToken", 'token');
-
-axios.defaults.headers.common['Authorization'] = localStorage.getItem('user-token');
-axios.post("https://webhook.site/994ceb10-492b-4ae6-86c9-fe8a72363389",formData).then((response) => {
-      resolve(response.data)
-    }).catch((error) => {
-      reject(new Error(error))
-    });
-
 document.addEventListener("deviceready", () => {
 
   window.FirebasePlugin.getToken(function(token) {
-    var formData = {
-      fcmToken: token,
-    }
+    var formData = new FormData();
+    formData.append("fcmToken", token);
 
     axios.defaults.headers.common['Authorization'] = localStorage.getItem('user-token');
     axios.post("https://webhook.site/994ceb10-492b-4ae6-86c9-fe8a72363389",formData).then((response) => {
@@ -69,3 +58,9 @@ document.addEventListener("deviceready", () => {
   //NavigationBar.backgroundColorByHexString('#ffffff');
 
 });
+
+// If we are not in Cordova, manually trigger the deviceready event
+const isCordovaApp = (typeof window.cordova !== "undefined");
+if (!isCordovaApp){
+  document.dispatchEvent(new CustomEvent("deviceready", {}));
+}
