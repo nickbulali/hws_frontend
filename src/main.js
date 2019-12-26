@@ -34,7 +34,7 @@ document.addEventListener("deviceready", () => {
         }).catch((error) => {
           reject(new Error(error))
         });
-    // axios.post("http://api.agilishisa.co.ke/api/register-fcmtoken",formData).then((response) => {
+    // axios.post("http://api.health.co.ke/api/register-fcmtoken",formData).then((response) => {
     //       resolve(response.data)
     //     }).catch((error) => {
     //       reject(new Error(error))
