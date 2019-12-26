@@ -477,7 +477,21 @@ html, body {
         vm.longitude = position.coords.longitude.toString()
         Vue.set(this,"longitude", position.coords.longitude.toString())
         Vue.set(this,"latitude", position.coords.latitude.toString())
-        //Vue.set(this,"showMap", true)
+
+        var formData = {
+          longitude: vm.longitude,
+          latitude: vm.latitude
+        }
+
+        console.log(formData)
+
+        apiCall({url: '/api/userDevice', data: formData, method: 'POST' })
+          .then(resp => {
+
+          })
+          .catch(error => {
+            
+          })
       },
       showMap(){
         this.progress = 'Location'
