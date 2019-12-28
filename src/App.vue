@@ -11,6 +11,7 @@
 <script>
 import Navbar from '@/components/layout/navbar'
 import BottomNav from '@/components/layout/bottomNav'
+import Echo from "laravel-echo";
 
 export default {
 	name: 'App',
@@ -22,6 +23,21 @@ export default {
 		return {
 			//
 		}
+	},
+	created(){
+		window.Pusher = require('pusher-js');
+	    window.Echo = new Echo({
+	      authEndpoint : process.env.VUE_APP_API_URL +'/broadcasting/auth',
+	        broadcaster: 'pusher',
+	        auth: {
+	            headers: {
+	                'Authorization': localStorage.getItem('user-token')
+	            }
+	        },
+	        key: 'a10beda06c429197af5c',
+			cluster: 'mt1',
+			encrypted: true,
+	    });
 	}
 }
 </script>

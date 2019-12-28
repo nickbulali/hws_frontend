@@ -107,13 +107,29 @@
                         required
                         class="text_field_2 mt-2"
                         outline
+                        @input="updateSubCategory"
                     ></v-select>
                 </v-flex>
                 <v-flex xs12>
                     <v-select
+                        v-if="getProfile.health_worker_profile != null"
                         v-model="profile.worker_sub_category_id"
                         :rules="inputRules"
                         :items="subjobs.worker_sub_category"
+                        item-value="id"
+                        item-text="name"
+                        prepend-inner-icon="assignment_turned_in"
+                        name="job_sub_group"
+                        label="Job Sub-Group"
+                        required
+                        class="text_field_2 mt-2"
+                        outline
+                    ></v-select>
+                    <v-select
+                        v-else
+                        v-model="profile.worker_sub_category_id"
+                        :rules="inputRules"
+                        :items="workerSubCategories"
                         item-value="id"
                         item-text="name"
                         prepend-inner-icon="assignment_turned_in"
@@ -229,7 +245,7 @@
             <v-flex xs12>
                 <div class="ma-2">
                     <div class="title white--text">{{getProfile.first_name}} {{getProfile.last_name}}</div>
-                    <div class="white--text" v-if="$can('health_worker_profile')">{{getProfile.health_worker_profile.worker_category.name}} - {{getProfile.health_worker_profile.worker_sub_category.name}}</div>
+                    <div class="white--text" v-if="$can('health_worker_profile') && getProfile.health_worker_profile != null">{{getProfile.health_worker_profile.worker_category.name}} - {{getProfile.health_worker_profile.worker_sub_category.name}}</div>
                 </div>
             </v-flex>
         </v-layout>
@@ -240,11 +256,11 @@
         elevation="0"
     >
         <v-card-text v-if="$can('health_worker_profile')">
-            <div>{{getProfile.health_worker_profile.bio}}</div>
-            <div class="my-4 subtitle-1 black--text">
+            <div v-if="getProfile.health_worker_profile != null">{{getProfile.health_worker_profile.bio}}</div>
+            <div v-if="getProfile.health_worker_profile != null" class="my-4 subtitle-1 black--text">
                 {{getProfile.health_worker_profile.residence}}
             </div>
-            <div>
+            <div v-if="getProfile.health_worker_profile != null">
                 <v-rating
                 :value="4.5"
                 color="amber"
@@ -254,7 +270,8 @@
                 size="14"
                 ></v-rating>
             </div>
-            <div class="grey--text">4.5 (413)</div>
+            <div v-if="getProfile.health_worker_profile != null" class="grey--text">4.5 (413)</div>
+            <div align="center" v-if="getProfile.health_worker_profile == null"><p>Create a Profile to be listed on the platform</p></div>
         </v-card-text>
         <v-divider class="mx-4"></v-divider>
        
@@ -310,7 +327,9 @@ export default {
                 residence: '',
                 experience_years: '',
                 profile_pic: ''
-            }
+            },
+
+            workerSubCategories: []
 		}
 	},
     created(){
@@ -343,6 +362,10 @@ export default {
                 this.profile.experience_years = this.getProfile.health_worker_profile.experience_years
                 this.profile.profile_pic = this.getProfile.health_worker_profile.profile_pic
             }
+        },
+        updateSubCategory(){
+            var x = this.$store.getters.allWorkerCategories.find((category) => category.id == this.profile.worker_category_id)
+            this.workerSubCategories = x.worker_sub_category
         }
     },
     computed: {

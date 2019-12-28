@@ -2,7 +2,6 @@
 	<nav>
 		<v-snackbar v-model="snackbar" :timeout="4000" top color="success">
 			<span>{{message}}</span>
-			<v-btn flat color="white" @click="snackbar = false">Close</v-btn>
 		</v-snackbar>
 		<v-toolbar app color="secondary" flat>
 			<!--<v-toolbar-side-icon class="white--text" @click="drawer = !drawer"></v-toolbar-side-icon>-->
@@ -28,8 +27,40 @@
 					>
 						notifications_none
 					</v-icon>
-					
+					<span v-if="notifications != 0" slot="badge"> {{notifications.length}} </span>
 				</v-badge>
+				<v-list two-line>
+				<template v-if="notifications" v-for="(notification, index) in notifications">
+					
+					<v-list-tile
+						:key="notification.id"
+						avatar
+						@click="readNotification(notification)"
+						router :to = "{ name: 'serviceRequests', params: { id: notification.data.serviceRequest.id } }"
+						v-if="notification.type == 'App\\Notifications\\NewServiceRequest' "
+						>
+						<v-list-tile-content>
+							<v-list-tile-title>{{notification.data.requester.first_name}} {{notification.data.requester.last_name}}</v-list-tile-title>
+							<v-list-tile-sub-title>Individual Service Request</v-list-tile-sub-title>
+						</v-list-tile-content>
+					</v-list-tile>
+					<v-divider
+					:key="index"
+					inset=true
+					></v-divider>
+				</template>
+				<template v-if="notifications.length==0">
+					<v-list-tile
+					@click=""
+					>
+					<v-list-tile-content>
+						<v-list-tile-sub-title>No New Notification</v-list-tile-sub-title>
+					</v-list-tile-content>
+				</v-list-tile>
+				</template>
+
+				</v-list>
+
 			</v-menu>
 
 			<!--dropdown menu-->
@@ -94,6 +125,10 @@
 
 <script>
   	import { AUTH_LOGOUT } from '@/store/actions/auth'
+	import { mapGetters, mapState, mapActions } from 'vuex'
+	import apiCall from '@/utils/api'
+  	import Pusher from 'pusher-js'
+
 export default {
 	components: {
 		
@@ -109,10 +144,49 @@ export default {
 			],
 		}
 	},
+	created(){
+		this.initialize()
+	},
 	methods: {
-      signOut: function () {
-        this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push('/login'))
-      },
+		...mapActions([
+			'fetchnotifications'
+		]),
+		initialize(){
+			Echo.private(`App.User.${this.getProfile.id}`).
+			notification((notification)=>{
+				if(notification.type == 'App\\Notifications\\NewServiceRequest'){
+					this.message = "New Service Request"
+					this.color="success"
+				}
+				
+				this.snackbar=true
+				this.fetchnotifications()
+				//this.notifications = this.notifications.concat(notification);
+			});
+			this.fetchnotifications()
+		},
+		readNotification(Item){
+			const index = this.notifications.indexOf(Item)
+			this.notifications.splice(index, 1)
+			apiCall({url: '/api/notificationRead/'+Item.id, method: 'GET' })
+			.then(resp => {
+				console.log("notification cleared")
+			})
+			.catch(error => {
+				console.log(error.response)
+			})
+		},
+
+      	signOut: function () {
+        	this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push('/login'))
+      	},
     },
+	computed: {
+		...mapGetters([
+			'notifications',
+			'isAuthenticated',
+			'getProfile'
+		]),
+	}
 }
 </script>

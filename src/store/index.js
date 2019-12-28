@@ -4,6 +4,8 @@ import user from './modules/user'
 import auth from './modules/auth'
 import roles from  './modules/roles'
 
+import notifications from './modules/notifications'
+
 import workerCategories from './modules/workerCategories'
 import workerSubCategories from './modules/workerSubCategories'
 
@@ -34,6 +36,7 @@ export default new Vuex.Store({
     user,
     auth,
     roles,
+    notifications,
     workerCategories,
     workerSubCategories
   },

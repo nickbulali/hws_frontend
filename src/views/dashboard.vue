@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard">
-  <v-snackbar v-model="snackbar" :timeout="4000" top :color="snackbarColor">
+  <v-snackbar v-model="snackbar" :timeout="4000" top :color="color">
     <span>{{message}}</span>
   </v-snackbar>
   <v-dialog 
@@ -20,7 +20,7 @@
           icon
           dark
           color="secondary"
-          v-if="progress != 'Time' && progress != 'Category' && progress != 'Worker List'"
+          v-if="progress != 'Time' && progress != 'Category' && progress != 'Worker List' && progress != 'Profile'"
         >
           <v-icon color="secondary">keyboard_backspace</v-icon>
         </v-btn>
@@ -45,6 +45,14 @@
           dark
           v-if="progress == 'Worker List'"
           @click="showCategories"
+        >
+          <v-icon>keyboard_backspace</v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          dark
+          v-if="progress == 'Profile'"
+          @click="showWorkerList"
         >
           <v-icon>keyboard_backspace</v-icon>
         </v-btn>
@@ -102,7 +110,7 @@
                       <v-text-field
                         v-model="requestData.from"
                         label="Start Time"
-                        append-icon="access_time"
+                        prepend-inner-icon="access_time"
                         readonly
                         v-on="on"
                         outline
@@ -138,7 +146,7 @@
                       <v-text-field
                         v-model="requestData.to"
                         label="End Time"
-                        append-icon="access_time"
+                        prepend-inner-icon="access_time"
                         readonly
                         v-on="on"
                         outline
@@ -268,6 +276,7 @@
               <v-card
                 elevation="0"
                 class="grey lighten-4 login-circle pa-2"
+                @click="goToProfile(index)"
               >
                 <v-layout row wrap>
                   <v-flex xs3>
@@ -292,7 +301,7 @@
                       ></v-rating>
                     </div>
                     <div class="mt-2">{{worker.health_worker_profile.bio.substring(0,80)+".."}}</div>
-                    <div class="mt-1">2.7Km</div>
+                    <div class="mt-1"><v-icon small class="mr-2">my_location</v-icon>{{worker.distance.toFixed(2)}}Km</div>
                   </v-flex>
                 </v-layout>
               </v-card>
@@ -303,12 +312,107 @@
               </v-btn>
             </v-flex>
             <v-bottom-sheet v-model="sheet">
-              <v-sheet class="text-center" height="200px">
-                
-                <div>Search Filters go here</div>
+              <v-sheet class="text-center">
+                <div class="pa-2">
+                  <v-layout column>
+                    <v-flex xs12 class="my-1">
+                      <v-layout row wrap>
+                        <v-flex xs3>
+                          <div class="grey--text mt-2">Gender</div>
+                        </v-flex>
+                        <v-flex xs9>
+                          <v-chip outline color="secondary">Male</v-chip>
+                          <v-chip outline color="secondary">Female</v-chip>
+                        </v-flex>
+                      </v-layout>
+                    </v-flex>
+                    <v-divider class="grey--text"></v-divider>
+                    <v-flex xs12 class="my-1">
+                      <v-layout row wrap>
+                        <v-flex xs3>
+                          <div class="grey--text mt-2">Sort By</div>
+                        </v-flex>
+                        <v-flex xs9>
+                          <v-chip outline color="secondary">Distance</v-chip>
+                          <v-chip outline color="secondary">Rating</v-chip>
+                        </v-flex>
+                      </v-layout>
+                    </v-flex>
+                    <v-divider class="grey--text"></v-divider>
+                    <v-flex xs12 class="my-1">
+                      <v-layout row wrap>
+                        <v-flex xs3>
+                          <div class="grey--text mt-2">Sub Group</div>
+                        </v-flex>
+                        <v-flex xs9>
+                          <v-chip outline color="secondary" v-for="(job, index) in subjobs.worker_sub_category" :key="job.id">{{job.name}}</v-chip>
+                        </v-flex>
+                      </v-layout>
+                    </v-flex>
+                  </v-layout>
+                </div>
               </v-sheet>
             </v-bottom-sheet>
           </v-layout>           
+        </div>
+        <div v-if="progress == 'Profile'">
+          <v-img
+            height="100%"
+            src="https://cdn.vuetifyjs.com/images/cards/server-room.jpg"
+          >
+            <v-layout column>
+              <v-flex xs12>
+                <v-avatar
+                  class="profile"
+                  color="grey"
+                  size="164"
+                  tile
+                >
+                  <v-img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg"></v-img>
+                </v-avatar>
+              </v-flex>
+              <v-flex xs12>
+                <div class="ma-2">
+                  <div class="title white--text">{{profile.first_name}} {{profile.last_name}}</div>
+                  <div class="white--text">{{profile.health_worker_profile.worker_category.name}} - {{profile.health_worker_profile.worker_sub_category.name}}</div>
+                </div>
+              </v-flex>
+            </v-layout>
+          </v-img>
+          
+          <div class="mt-3">{{profile.health_worker_profile.bio}}</div>
+          <div class="my-4 subtitle-1 black--text">
+            {{profile.health_worker_profile.residence}}
+          </div>
+          <div>
+            <v-rating
+              :value="4.5"
+              color="amber"
+              dense
+              half-increments
+              readonly
+              size="14"
+            ></v-rating>
+          </div>
+          <div class="grey--text">4.5 (413)</div>
+          <div class="mt-2">{{profile.distance.toFixed(2)}}Km away</div>
+        
+        <v-divider class="mx-4"></v-divider>
+      
+            <div align="center">
+                <v-btn
+                    :loading="loading"
+                    depressed
+                    class="primary white--text text-none mt-2"
+                    text
+                    @click="completeRequest"
+                >
+                    Complete
+                    <v-icon right class="white--text">
+                        done_all
+                    </v-icon>
+                </v-btn>
+            </div>
         </div>
       </v-card-text>
     </v-card>
@@ -429,10 +533,11 @@ html, body {
         menu2: false,
         sheet: false,
         //showMap: false,
+        color: '',
 
         snackbar: false,
         message: '',
-        snackbarColor: '',
+        color: '',
         loading: false,
 
         doctorColor: 'transparent',
@@ -455,21 +560,24 @@ html, body {
           location: {},
           from: null,
           to: null,
-          category: ''
+          category: null,
+          workerId: ''
         },
 
-        workers: []
+        workers: [],
+        profile: {}
       }
     },
     created(){
       navigator.geolocation.getCurrentPosition(this.currentPosition);
       this.USER_REQUEST()
+      this.fetchWorkerCategories()
     },
     watch: {
       
     },
     methods:{
-      ...mapActions(['USER_REQUEST']),
+      ...mapActions(['USER_REQUEST', 'fetchWorkerCategories']),
       allowedStep: m => m % 5 === 0,
       currentPosition(position){
         var vm = this
@@ -505,9 +613,12 @@ html, body {
         this.progress = 'Category'
         this.progressBar = 50
       },
+      showWorkerList(){
+        this.progress = 'Worker List'
+        this.progressBar = 75
+      },
       newPos(){
         this.requestData.location = this.$refs.myMarker.mapObject.getLatLng()
-        console.log("moved", this.requestData.location)
         this.progress = 'Time'
         this.progressBar = 25
       },
@@ -515,7 +626,7 @@ html, body {
         if(this.requestData.from == null || this.requestData.to == null){
           this.message = 'Please Pick Start/End Time'
           this.snackbar = true
-          this.snackbarColor = 'error'
+          this.color = 'error'
         }else{
           this.progress = 'Category'
           this.progressBar = 50
@@ -525,20 +636,60 @@ html, body {
         
       },
       listWorkers(){
-        this.loading = true
-        apiCall({url: '/api/userRequest?type=new', data: this.requestData, method: 'POST' })
-						.then(resp => {
-							this.loading = false
+        if(this.requestData.category == null){
+          this.message = 'Please Pick a Category'
+          this.snackbar = true
+          this.color = 'error'
+        }else{
+          this.loading = true
+          apiCall({url: '/api/userRequest?type=new', data: this.requestData, method: 'POST' })
+            .then(resp => {
+              this.loading = false
               this.workers = resp.data
               this.progress = 'Worker List'
               this.progressBar = 75
-						})
-						.catch(error => {
-							this.loading = false
-							this.message = "An Error Occured, Please Try Again."
-							this.color = 'error'
-							this.snackbar = true
-						})
+            })
+            .catch(error => {
+              this.loading = false
+              this.message = "An Error Occured, Please Try Again."
+              this.color = 'error'
+              this.snackbar = true
+            })
+        }
+      },
+      goToProfile(index){
+        this.progress = 'Profile'
+        this.progressBar = 100
+        this.profile = this.workers[index]
+        this.requestData.workerId = this.workers[index].id
+      },
+      completeRequest(){
+        this.loading = true
+        apiCall({url: '/api/userRequest?type=complete', data: this.requestData, method: 'POST' })
+          .then(resp => {
+            this.loading = false
+            this.progress = 'Location'
+            this.progressBar = 0
+            this.requestDialog = false
+            this.message = "Request Completed Successfully."
+            this.color = 'success'
+            this.snackbar = true
+
+            this.requestData.from = null
+            this.requestData.to = null
+            this.requestData.category = null
+            this.requestData.workerId = ''
+            this.clinicalOfficerColor = 'transparent'
+            this.doctorColor = 'transparent'
+            this.nurseColor = 'transparent'
+            this.pharmacistColor = 'transparent'
+          })
+          .catch(error => {
+            this.loading = false
+            this.message = "An Error Occured, Please Try Again."
+            this.color = 'error'
+            this.snackbar = true
+          })
       },
       newRequest(){
         this.requestDialog = true
@@ -605,10 +756,15 @@ html, body {
       }
     },
     computed: {
+      ...mapGetters(['allWorkerCategories']),
       now(){
         var today = new Date();
         var now = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
         return now
+      },
+
+      subjobs(){
+        return this.$store.getters.allWorkerCategories.find((category) => category.id == this.requestData.category)
       },
     }
 
