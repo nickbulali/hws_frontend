@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import user from './modules/user'
 import auth from './modules/auth'
 import roles from  './modules/roles'
+import ablilities from './modules/abilities'
 
 import notifications from './modules/notifications'
 
@@ -36,6 +37,7 @@ export default new Vuex.Store({
     user,
     auth,
     roles,
+    ablilities,
     notifications,
     workerCategories,
     workerSubCategories

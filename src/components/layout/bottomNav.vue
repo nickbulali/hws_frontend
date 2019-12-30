@@ -16,10 +16,19 @@
       </v-btn>
 
       <v-btn
-        router to="/workers"
+        v-if="$can('individual_request_service')"
+        router to="/service-requests"
       >
-        <span>Health Workers</span>
-        <v-icon dark>person</v-icon>
+        <span>Service Requests</span>
+        <v-icon dark>touch_app</v-icon>
+      </v-btn>
+
+      <v-btn
+        v-if="$can('receive_service')"
+        router to="/hospitals"
+      >
+        <span>Hospitals</span>
+        <v-icon dark>local_hospital</v-icon>
       </v-btn>
 
       <v-btn
@@ -27,13 +36,6 @@
       >
         <span>Favourites</span>
         <v-icon>star</v-icon>
-      </v-btn>
-
-      <v-btn
-        router to="/map"
-      >
-        <span>Map</span>
-        <v-icon dark>map</v-icon>
       </v-btn>
 
     </v-bottom-nav>
@@ -51,8 +53,14 @@
         this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push('/login'))
       },
     },
+    created(){
+      this.USER_REQUEST()
+    },
     computed: {
       
+    },
+    methods:{
+      ...mapActions(['USER_REQUEST']),
     }
   }
 </script>

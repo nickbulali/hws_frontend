@@ -6,7 +6,7 @@ import ResetPass from './components/auth/resetPass.vue'
 import Register from './components/auth/register.vue'
 
 import Dashboard from './views/dashboard.vue'
-import MapView from './views/Map/index.vue'
+import serviceRequest from './views/serviceRequest/index.vue'
 
 import Profile from './views/profile/index.vue'
 
@@ -59,9 +59,9 @@ export default new Router({
       beforeEnter: ifAuthenticated,
     },
     {
-      path: '/map',
-      name: 'map',
-      component: MapView,
+      path: '/service-requests',
+      name: 'serviceRequest',
+      component: serviceRequest,
       beforeEnter: ifAuthenticated,
     },
     {

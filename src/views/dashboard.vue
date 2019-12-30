@@ -3,6 +3,26 @@
   <v-snackbar v-model="snackbar" :timeout="4000" top :color="color">
     <span>{{message}}</span>
   </v-snackbar>
+  <v-dialog
+      v-model="filterDialog"
+      hide-overlay
+      persistent
+      width="300"
+    >
+      <v-card
+        color="secondary"
+        dark
+      >
+        <v-card-text>
+          Applying Filter
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   <v-dialog 
     fullscreen
     hide-overlay
@@ -307,10 +327,22 @@
               </v-card>
             </v-flex>
             <v-flex xs12>
-              <v-btn block depressed class="primary white--text" @click="sheet = !sheet">
+              <div v-if="workersLength" class="text-xs-center">
+                  <v-pagination
+                    :length="workersLength"
+                    total-visible="5"
+                    v-model="workersPagination.current_page"
+                    @input="filterResults"
+                    circle>
+                  </v-pagination>
+                </div>
+            </v-flex>
+            <v-flex xs12>
+              <v-btn block depressed class="primary white--text text-none" @click="sheet = !sheet">
                 Filters
               </v-btn>
             </v-flex>
+            
             <v-bottom-sheet v-model="sheet">
               <v-sheet class="text-center">
                 <div class="pa-2">
@@ -321,8 +353,8 @@
                           <div class="grey--text mt-2">Gender</div>
                         </v-flex>
                         <v-flex xs9>
-                          <v-chip outline color="secondary">Male</v-chip>
-                          <v-chip outline color="secondary">Female</v-chip>
+                          <v-chip :outline="maleOutline" :dark="darkMale" color="secondary" @click="filterGender(1)">Male</v-chip>
+                          <v-chip :outline="femaleOutline" :dark="darkFemale" color="secondary" @click="filterGender(2)">Female</v-chip>
                         </v-flex>
                       </v-layout>
                     </v-flex>
@@ -330,14 +362,31 @@
                     <v-flex xs12 class="my-1">
                       <v-layout row wrap>
                         <v-flex xs3>
-                          <div class="grey--text mt-2">Sort By</div>
+                          <div class="grey--text mt-2">Distance</div>
                         </v-flex>
                         <v-flex xs9>
-                          <v-chip outline color="secondary">Distance</v-chip>
-                          <v-chip outline color="secondary">Rating</v-chip>
+                          <v-chip :outline="outline5km" :dark="dark5km" color="secondary" @click="filterDistance(1)">5Km</v-chip>
+                          <v-chip :outline="outline10km" :dark="dark10km" color="secondary" @click="filterDistance(2)">10km</v-chip>
+                          <v-chip :outline="outline15km" :dark="dark15km" color="secondary" @click="filterDistance(3)">15km</v-chip>
                         </v-flex>
                       </v-layout>
                     </v-flex>
+                    <!-- <v-divider class="grey--text"></v-divider>
+                    <v-flex xs12 class="my-1">
+                      <v-layout row wrap>
+                        <v-flex xs3>
+                          <div class="grey--text mt-2">Rating</div>
+                        </v-flex>
+                        <v-flex xs9>
+                          <v-chip outline color="secondary">
+                            Ascending
+                          </v-chip>
+                          <v-chip outline color="secondary">
+                            Descending
+                          </v-chip>
+                        </v-flex>
+                      </v-layout>
+                    </v-flex> -->
                     <v-divider class="grey--text"></v-divider>
                     <v-flex xs12 class="my-1">
                       <v-layout row wrap>
@@ -345,9 +394,17 @@
                           <div class="grey--text mt-2">Sub Group</div>
                         </v-flex>
                         <v-flex xs9>
-                          <v-chip outline color="secondary" v-for="(job, index) in subjobs.worker_sub_category" :key="job.id">{{job.name}}</v-chip>
+                          <template v-for="(job, index) in subjobs.worker_sub_category">
+                            <v-chip v-if="subIndex == index" dark color="secondary" @click="filterBySubGroup(job.id, index)">{{job.name}}</v-chip>
+                            <v-chip v-else outline color="secondary" @click="filterBySubGroup(job.id, index)">{{job.name}}</v-chip>
+                          </template>
                         </v-flex>
                       </v-layout>
+                    </v-flex>
+                    <v-flex xs12>
+                      <v-btn block depressed class="primary white--text text-none" @click="resetFilter" :loading="loading">
+                        Reset Filters
+                      </v-btn>
                     </v-flex>
                   </v-layout>
                 </div>
@@ -528,6 +585,23 @@ html, body {
       ))
 
       return {
+        filterDialog: false,
+
+        maleOutline: true,
+        femaleOutline: true,
+        darkMale: false,
+        darkFemale: false,
+
+        outline5km: true,
+        outline10km: true,
+        outline15km: true,
+        dark5km: false,
+        dark10km: false,
+        dark15km: false,
+
+        subIndex: -1,
+        subOutline: true,
+
         requestDialog: false,
         menu1: false,
         menu2: false,
@@ -561,11 +635,23 @@ html, body {
           from: null,
           to: null,
           category: null,
-          workerId: ''
+          workerId: null,
+
+          genderId: null,
+          distance: 50,
+          subGroup: null,
         },
 
         workers: [],
-        profile: {}
+        profile: {},
+
+        workersPagination: {
+          search: ' ',
+          current_page: 1,
+          per_page: 0,
+          total: 0,
+          visible: 10
+        }
       }
     },
     created(){
@@ -573,12 +659,103 @@ html, body {
       this.USER_REQUEST()
       this.fetchWorkerCategories()
     },
+    mounted(){
+      //this.$refs.myMapRef.mapObject.invalidateSize()
+    },
     watch: {
       
     },
     methods:{
       ...mapActions(['USER_REQUEST', 'fetchWorkerCategories']),
       allowedStep: m => m % 5 === 0,
+      resetFilter(){
+        this.maleOutline = true
+        this.femaleOutline = true
+        this.darkMale = false
+        this.darkFemale = false
+        this.requestData.genderId = null
+
+        this.outline5km = true
+        this.outline10km = true
+        this.outline15km = true
+        this.dark5km = false,
+        this.dark10km = false,
+        this.dark15km = false,
+        this.requestData.distance = 50
+
+        this.subIndex = -1
+        this.requestData.subGroup = null
+
+        this.loading = true
+        apiCall({url: '/api/userRequest?type=filter&page='+this.workersPagination.current_page, data: this.requestData, method: 'POST' })
+            .then(resp => {
+              this.loading = false
+              this.sheet = false
+              this.workers = resp.data
+              this.workersPagination.current_page = resp.current_page
+		          this.workersPagination.total = resp.total
+		          this.workersPagination.per_page = resp.per_page
+
+            })
+            .catch(error => {
+              this.loading = false
+              this.message = "An Error Occured, Please Try Again."
+              this.color = 'error'
+              this.snackbar = true
+            })
+      },
+      filterGender(gender){
+        if(gender == 1){
+          this.maleOutline = false
+          this.femaleOutline = true
+          this.darkMale = true
+          this.darkFemale = false
+          this.requestData.genderId = 1
+          this.filterResults()
+        } else {
+          this.maleOutline = true
+          this.femaleOutline = false
+          this.darkMale = false
+          this.darkFemale = true
+          this.requestData.genderId = 2
+          this.filterResults()
+        }
+      },
+      filterDistance(distance){
+        if(distance == 1){
+          this.outline5km = false,
+          this.outline10km = true,
+          this.outline15km = true,
+          this.dark5km = true,
+          this.dark10km = false,
+          this.dark15km = false,
+          this.requestData.distance = 5
+          this.filterResults()
+        } else if(distance == 2){
+          this.outline5km = true,
+          this.outline10km = false,
+          this.outline15km = true,
+          this.dark5km = false,
+          this.dark10km = true,
+          this.dark15km = false,
+          this.requestData.distance = 10
+          this.filterResults()
+        } else {
+          this.outline5km = true,
+          this.outline10km = true,
+          this.outline15km = false,
+          this.dark5km = false,
+          this.dark10km = false,
+          this.dark15km = true,
+          this.requestData.distance = 15
+          this.filterResults()
+        }
+      },
+      filterBySubGroup(id, index){
+        this.subIndex = index
+        this.requestData.subGroup = id
+        this.filterResults()
+      },
       currentPosition(position){
         var vm = this
         vm.latitude = position.coords.latitude.toString()
@@ -646,6 +823,10 @@ html, body {
             .then(resp => {
               this.loading = false
               this.workers = resp.data
+              this.workersPagination.current_page = resp.current_page
+		          this.workersPagination.total = resp.total
+		          this.workersPagination.per_page = resp.per_page
+
               this.progress = 'Worker List'
               this.progressBar = 75
             })
@@ -656,6 +837,24 @@ html, body {
               this.snackbar = true
             })
         }
+      },
+      filterResults(){
+        this.filterDialog = true
+          apiCall({url: '/api/userRequest?type=filter&page='+this.workersPagination.current_page, data: this.requestData, method: 'POST' })
+            .then(resp => {
+              this.filterDialog = false
+              this.workers = resp.data
+              this.workersPagination.current_page = resp.current_page
+		          this.workersPagination.total = resp.total
+		          this.workersPagination.per_page = resp.per_page
+
+            })
+            .catch(error => {
+              this.filterDialog = false
+              this.message = "An Error Occured, Please Try Again."
+              this.color = 'error'
+              this.snackbar = true
+            })
       },
       goToProfile(index){
         this.progress = 'Profile'
@@ -693,11 +892,12 @@ html, body {
       },
       newRequest(){
         this.requestDialog = true
+        //this.$refs.myMapRef.mapObject.invalidateSize()
       },
       pickCategory(category){
         if(category == 1){
           if(this.requestData.category == 1){
-            this.requestData.category = ''
+            this.requestData.category = null
             this.doctorColor = 'transparent'
             this.nurseColor = 'transparent'
             this.clinicalOfficerColor = 'transparent'
@@ -711,7 +911,7 @@ html, body {
           }
         } else if(category == 2){
           if(this.requestData.category == 2){
-            this.requestData.category = ''
+            this.requestData.category = null
             this.nurseColor = 'transparent'
             this.doctorColor = 'transparent'
             this.clinicalOfficerColor = 'transparent'
@@ -725,7 +925,7 @@ html, body {
           }
         } else if(category == 3){
           if(this.requestData.category == 3){
-            this.requestData.category = ''
+            this.requestData.category = null
             this.clinicalOfficerColor = 'transparent'
             this.doctorColor = 'transparent'
             this.nurseColor = 'transparent'
@@ -739,7 +939,7 @@ html, body {
           }
         } else if(category == 4){
           if(this.requestData.category == 4){
-            this.requestData.category = ''
+            this.requestData.category = null
             this.clinicalOfficerColor = 'transparent'
             this.doctorColor = 'transparent'
             this.nurseColor = 'transparent'
@@ -762,7 +962,9 @@ html, body {
         var now = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
         return now
       },
-
+      workersLength: function() {
+	        return Math.ceil(this.workersPagination.total / this.workersPagination.per_page);
+	    },
       subjobs(){
         return this.$store.getters.allWorkerCategories.find((category) => category.id == this.requestData.category)
       },
