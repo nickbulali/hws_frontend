@@ -3,14 +3,16 @@ import Vuex from 'vuex'
 import user from './modules/user'
 import auth from './modules/auth'
 import roles from  './modules/roles'
-import ablilities from './modules/abilities'
 
+import abilities from './modules/abilities'
 import notifications from './modules/notifications'
+import serviceRequests from './modules/serviceRequests'
 
 import workerCategories from './modules/workerCategories'
 import workerSubCategories from './modules/workerSubCategories'
 
 import VuexPersist from 'vuex-persist'
+
 import { abilityPlugin, ability as appAbility } from './ability'
 
 Vue.use(Vuex)
@@ -37,8 +39,9 @@ export default new Vuex.Store({
     user,
     auth,
     roles,
-    ablilities,
+    abilities,
     notifications,
+    serviceRequests,
     workerCategories,
     workerSubCategories
   },

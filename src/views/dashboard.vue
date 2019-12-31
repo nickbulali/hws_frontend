@@ -76,7 +76,6 @@
         >
           <v-icon>keyboard_backspace</v-icon>
         </v-btn>
-        <v-spacer></v-spacer>
         <v-toolbar-title>New Request</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn
@@ -559,7 +558,6 @@ html, body {
   import apiCall from '@/utils/api'
   import Vue from 'vue'
   import { mapGetters, mapActions } from 'vuex'
-  import { USER_REQUEST } from '@/store/actions/user'
 
   import * as Vue2Leaflet from 'vue2-leaflet'
   import { latLng, Icon, icon } from 'leaflet'
@@ -656,7 +654,6 @@ html, body {
     },
     created(){
       navigator.geolocation.getCurrentPosition(this.currentPosition);
-      this.USER_REQUEST()
       this.fetchWorkerCategories()
     },
     mounted(){
@@ -666,7 +663,7 @@ html, body {
       
     },
     methods:{
-      ...mapActions(['USER_REQUEST', 'fetchWorkerCategories']),
+      ...mapActions(['fetchWorkerCategories']),
       allowedStep: m => m % 5 === 0,
       resetFilter(){
         this.maleOutline = true

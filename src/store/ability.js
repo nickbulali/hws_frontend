@@ -2,10 +2,10 @@ import { Ability } from '@casl/ability'
 
 export const ability = new Ability()
 
-export const abilityPlugin = (store) => {
-  //ability.update(store.state.roles);
+export const abilityPlugin = (store) => {  
   return store.subscribe((mutation) => {
-
+    ability.update(store.state.abilities.rules);
+    //console.log("permissions aryye",store.state.abilities.rules)
     switch (mutation.type) {
     case 'USER_SUCCESS':
 
@@ -17,8 +17,8 @@ export const abilityPlugin = (store) => {
         }
       }
       ability.update([{ actions: permissions, subject: 'all' }])
-      //store.commit('setRules', [{ actions: permissions, subject: 'all' }])
-      //console.log("permissions are", permissions)
+      
+      store.commit('setRules', [{ actions: permissions, subject: 'all' }])
       break
     case 'USER_ERROR':
       ability.update([{ actions: {} }])

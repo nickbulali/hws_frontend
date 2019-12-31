@@ -16,7 +16,6 @@
       </v-btn>
 
       <v-btn
-        v-if="$can('individual_request_service')"
         router to="/service-requests"
       >
         <span>Service Requests</span>
@@ -54,7 +53,7 @@
       },
     },
     created(){
-      this.USER_REQUEST()
+      
     },
     computed: {
       

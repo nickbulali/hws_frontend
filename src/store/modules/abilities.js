@@ -1,25 +1,21 @@
 import { Ability } from '@casl/ability'
 
 const state = {
-	roles: {},
+	rules: []
 };
 
 const getters = {
-    ability: (state) => state.roles
-	// ability() {
-    //     return new Ability()
-    //   }
+	ability() {
+        return new Ability()
+      }
 };
 
 const actions = {
-	async fetchRoles({commit}) {
-		const response = await apiCall({url: '/api/role', method: 'GET' });
-		commit('setRoles', response)
-	},
+	
 };
 
 const mutations = {
-	setRules: (state, response) => (state.roles = response)
+	setRules: (state, response) => (state.rules = response)
 };
 
 export default {
