@@ -44,9 +44,32 @@
 							<v-list-tile-sub-title>Individual Service Request</v-list-tile-sub-title>
 						</v-list-tile-content>
 					</v-list-tile>
+					<v-list-tile
+						:key="notification.id"
+						avatar
+						@click="readNotification(notification)"
+						router :to = "{ name: 'serviceRequests', params: { id: notification.data.serviceRequest.id } }"
+						v-if="notification.type == 'App\\Notifications\\AcceptServiceRequest' "
+						>
+						<v-list-tile-content>
+							<v-list-tile-title>{{notification.data.recipient.first_name}} {{notification.data.recipient.last_name}}</v-list-tile-title>
+							<v-list-tile-sub-title>Service Request Accepted</v-list-tile-sub-title>
+						</v-list-tile-content>
+					</v-list-tile>
+					<v-list-tile
+						:key="notification.id"
+						avatar
+						@click="readNotification(notification)"
+						router :to = "{ name: 'serviceRequests', params: { id: notification.data.serviceRequest.id } }"
+						v-if="notification.type == 'App\\Notifications\\RejectServiceRequest' "
+						>
+						<v-list-tile-content>
+							<v-list-tile-title>{{notification.data.recipient.first_name}} {{notification.data.recipient.last_name}}</v-list-tile-title>
+							<v-list-tile-sub-title>Service Request Rejected</v-list-tile-sub-title>
+						</v-list-tile-content>
+					</v-list-tile>
 					<v-divider
 					:key="index"
-					inset=true
 					></v-divider>
 				</template>
 				<template v-if="notifications.length==0">
@@ -157,6 +180,12 @@ export default {
 				if(notification.type == 'App\\Notifications\\NewServiceRequest'){
 					this.message = "New Service Request"
 					this.color="success"
+				}  else if (notification.type == 'App\\Notifications\\AcceptServiceRequest'){
+					this.message = "Service Request Accepted"
+					this.color="success"
+				} else if (notification.type == 'App\\Notifications\\RejectServiceRequest'){
+					this.message = "Service Request Rejected"
+					this.color="error"
 				}
 				
 				this.snackbar=true
