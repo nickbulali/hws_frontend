@@ -177,7 +177,7 @@
                     <v-text-field
                         v-model="profile.experience_years"
                         :rules="inputRules"
-                        prepend-inner-icon="assignment"
+                        prepend-inner-icon="hourglass_full"
                         name="experience_years"
                         label="Experience Years"
                         outline
@@ -221,6 +221,12 @@
                         class="mt-2"
                         outline
                     ></v-textarea>
+                </v-flex>
+                <v-flex xs12 class="mt-3">
+                    <v-btn block depressed class="primary text-none" @click="updateProfile" :loading="loading">
+                        Save
+                        <v-icon right small>save</v-icon>
+                    </v-btn>
                 </v-flex>
                 
             </v-layout>
@@ -292,6 +298,7 @@
   </div>
 </template>
 <script>
+import apiCall from '@/utils/api'
 import format from 'date-fns/format'
 import { mapGetters, mapActions } from 'vuex'
 import { USER_REQUEST } from '@/store/actions/user'
@@ -302,6 +309,7 @@ export default {
 			color: '',
 			message: '',
 			snackbar: false,
+            loading: false,
             profileDialog: false,
             inputRules: [
 				v => !!v || 'Field is required'
@@ -312,6 +320,7 @@ export default {
             ],
 
             profile: {
+                id: '',
                 fname: '',
                 lname: '',
                 email: '',
@@ -345,6 +354,7 @@ export default {
             this.USER_REQUEST()
         },
         assignProfile(){
+            this.profile.id = this.getProfile.id
             this.profile.fname = this.getProfile.first_name
             this.profile.lname = this.getProfile.last_name
             this.profile.email = this.getProfile.email
@@ -366,6 +376,24 @@ export default {
         updateSubCategory(){
             var x = this.$store.getters.allWorkerCategories.find((category) => category.id == this.profile.worker_category_id)
             this.workerSubCategories = x.worker_sub_category
+        },
+        updateProfile(){
+            this.loading = true
+            apiCall({url: '/api/user', data: this.profile, method: 'POST' })
+            .then(resp => {
+                this.loading = false
+                this.profileDialog = false
+                this.message = "Profile Updated Successfully"
+                this.color = 'success'
+                this.snackbar = true
+                this.USER_REQUEST()
+            })
+            .catch(error => {
+              this.loading = false
+              this.message = "An Error Occured, Please Try Again."
+              this.color = 'error'
+              this.snackbar = true
+            })
         }
     },
     computed: {

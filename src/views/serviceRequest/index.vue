@@ -25,89 +25,136 @@
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
-        <div v-if="profileDialog == true">
-          <v-img
-            height="100%"
-            src="https://cdn.vuetifyjs.com/images/cards/server-room.jpg"
-          >
-            <v-layout column>
-              <v-flex xs12>
-                <v-avatar
-                  class="profile"
-                  color="grey"
-                  size="164"
-                  tile
-                >
-                  <v-img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg"></v-img>
-                </v-avatar>
-              </v-flex>
-              <v-flex xs12>
-                <div class="ma-2" v-if="$can('individual_request_service')">
-                  <div class="title white--text">{{profile.recipient.first_name}} {{profile.recipient.last_name}}</div>
-                  <div class="white--text">{{profile.recipient.health_worker_profile.worker_category.name}} - {{profile.recipient.health_worker_profile.worker_sub_category.name}}</div>
-                </div>
-                <div class="ma-2" v-if="$can('receive_service')">
-                  <div class="title white--text">{{profile.requester.first_name}} {{profile.requester.last_name}}</div>
-                </div>
-              </v-flex>
-            </v-layout>
-          </v-img>
-            <v-container>
-              <div class="mt-3" v-if="$can('individual_request_service')">{{profile.recipient.health_worker_profile.bio}}</div>
-              <div class="my-4 subtitle-1 black--text" v-if="$can('individual_request_service')">
-                {{profile.recipient.health_worker_profile.residence}}
-              </div>
-              <div v-if="$can('individual_request_service')">
-                <v-rating
-                  :value="4.5"
-                  color="amber"
-                  dense
-                  half-increments
-                  readonly
-                  size="14"
-                ></v-rating>
-              </div>
-              <div class="grey--text" v-if="$can('individual_request_service')">4.5 (413)</div>
-              <div v-if="$can('receive_service')"><v-icon small left>local_phone</v-icon>{{profile.requester.phone_no}}</div>
-              <div ><v-icon small left>my_location</v-icon>{{profile.distance.toFixed(2)}}Km away</div>
-
-              <div v-if="$can('receive_service') && profile.status_id == 1">
-                <v-layout row wrap>
-                  <v-flex xs6>
-                    <v-btn block depressed class="green white--text text-none mr-1" :loading="acceptLoading" @click="acceptRequest(profile.id)">Accept</v-btn>
-                  </v-flex>
-                  <v-flex xs6>
-                    <v-btn block depressed class="red white--text text-none ml-1" :loading="rejectLoading" @click="rejectRequest(profile.id)">Reject</v-btn>
-                  </v-flex>
-                </v-layout>
-              </div>
-          
-              <v-divider class="mx-4 my-2"></v-divider>
-              
-              <v-map v-if="$can('individual_request_service')" ref="myMapRef" style="position: absolute; width: 92%; height: 180px; z-index: 2" :center="[profile.workerLocation[0], profile.workerLocation[1]]" :zoom="15">
-                <v-icondefault class="mt-5"></v-icondefault>
-                <v-tilelayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></v-tilelayer>
-                <v-marker
-                  ref = "myMarker"
-                  :lat-lng="[profile.workerLocation[0], profile.workerLocation[1]]"
-                  :icon="icon"
-                >
-                  <v-popup :content="profile.recipient.first_name"></v-popup>
-                </v-marker>
-              </v-map>
-              <v-map v-if="$can('receive_service')" ref="myMapRef" style="position: absolute; width: 92%; height: 250px; z-index: 2" :center="[profile.latitude, profile.longitude]" :zoom="15">
-                <v-icondefault class="mt-5"></v-icondefault>
-                <v-tilelayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></v-tilelayer>
-                <v-marker
-                    ref = "myMarker"
-                    :lat-lng="[profile.latitude, profile.longitude]"
-                    :icon="icon"
+        <!--<v-card-text style="height: 100%;">-->
+          <div v-if="profileDialog == true">
+            <v-img
+              height="220px"
+              src="https://cdn.vuetifyjs.com/images/cards/server-room.jpg"
+            >
+              <v-layout column>
+                <v-flex xs12>
+                  <v-avatar
+                    class="profile"
+                    color="grey"
+                    size="164"
+                    tile
                   >
-                  <v-popup :content="profile.requester.first_name"></v-popup>
-                </v-marker>
-              </v-map>
-            </v-container>
-        </div>
+                    <v-img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg"></v-img>
+                  </v-avatar>
+                </v-flex>
+                <v-flex xs12>
+                  <div class="ma-2" v-if="$can('individual_request_service')">
+                    <div class="title white--text">{{profile.recipient.first_name}} {{profile.recipient.last_name}}</div>
+                    <div class="white--text">{{profile.recipient.health_worker_profile.worker_category.name}} - {{profile.recipient.health_worker_profile.worker_sub_category.name}}</div>
+                  </div>
+                  <div class="ma-2" v-if="$can('receive_service')">
+                    <div class="title white--text">{{profile.requester.first_name}} {{profile.requester.last_name}}</div>
+                  </div>
+                </v-flex>
+              </v-layout>
+            </v-img>
+              <v-container>
+                <div class="mt-3" v-if="$can('individual_request_service')">{{profile.recipient.health_worker_profile.bio}}</div>
+                <div class="my-4 subtitle-1 black--text" v-if="$can('individual_request_service')">
+                  {{profile.recipient.health_worker_profile.residence}}
+                </div>
+                <div v-if="$can('individual_request_service')">
+                  <v-rating
+                    :value="4.5"
+                    color="amber"
+                    dense
+                    half-increments
+                    readonly
+                    size="14"
+                  ></v-rating>
+                </div>
+                <div class="grey--text" v-if="$can('individual_request_service')">4.5 (413)</div>
+                <div v-if="$can('receive_service')"><v-icon small left>local_phone</v-icon>{{profile.requester.phone_no}}</div>
+                <div v-if="profile.status_id == 1 || profile.status_id == 2"><v-icon small left>my_location</v-icon>{{profile.distance.toFixed(2)}}Km away</div>
+
+                <div v-if="$can('receive_service') && profile.status_id == 1">
+                  <v-layout row wrap>
+                    <v-flex xs6>
+                      <v-btn block depressed class="green white--text text-none mr-1" :loading="acceptLoading" @click="acceptRequest(profile.id)">Accept</v-btn>
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-btn block depressed class="red white--text text-none ml-1" :loading="rejectLoading" @click="rejectRequest(profile.id)">Reject</v-btn>
+                    </v-flex>
+                  </v-layout>
+                </div>
+                <div v-if="$can('receive_service') && profile.status_id == 2">
+                  <v-layout row wrap>
+                    <v-flex xs6>
+                      <v-btn block depressed class="green white--text text-none mr-1" :loading="completeLoading" @click="completeRequest(profile.id)">Complete</v-btn>
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-btn block depressed class="red white--text text-none ml-1" :loading="cancelLoading" @click="cancelRequest(profile.id)">Cancel</v-btn>
+                    </v-flex>
+                  </v-layout>
+                </div>
+            
+                <v-divider class="mx-1 my-2"></v-divider>
+                  <div v-if="profile.status_id == 1 || profile.status_id == 2">
+                    <v-map v-if="$can('individual_request_service')" ref="myMapRef" style="position: absolute; width: 92%; height: 180px; z-index: 2" :center="[profile.workerLocation[0], profile.workerLocation[1]]" :zoom="15">
+                      <v-icondefault class="mt-5"></v-icondefault>
+                      <v-tilelayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></v-tilelayer>
+                      <v-marker
+                        ref = "myMarker"
+                        :lat-lng="[profile.workerLocation[0], profile.workerLocation[1]]"
+                        :icon="icon"
+                      >
+                        <v-popup :content="profile.recipient.first_name"></v-popup>
+                      </v-marker>
+                    </v-map>
+                    <v-map v-if="$can('receive_service')" ref="myMapRef" style="position: absolute; width: 92%; height: 250px; z-index: 2" :center="[profile.latitude, profile.longitude]" :zoom="15">
+                      <v-icondefault class="mt-5"></v-icondefault>
+                      <v-tilelayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></v-tilelayer>
+                      <v-marker
+                          ref = "myMarker"
+                          :lat-lng="[profile.latitude, profile.longitude]"
+                          :icon="icon"
+                        >
+                        <v-popup :content="profile.requester.first_name"></v-popup>
+                      </v-marker>
+                    </v-map>
+                  </div>
+                  <div v-if="profile.status_id == 3">
+                  <div align="center" class="my-3"><b>Review</b></div>
+                    <v-layout column>
+                      <v-flex xs12>
+                        <v-layout row wrap>
+                          <v-flex xs3>
+                            <div class="grey--text">Rating</div>
+                          </v-flex>
+                          <v-flex xs9>
+                            <v-rating 
+                              color="yellow darken-3"
+                              small 
+                              v-model="userRating"></v-rating>
+                          </v-flex>
+                        </v-layout>
+                      </v-flex>
+                      <v-flex xs12>
+                        <v-layout row wrap>
+                          <v-flex xs3>
+                            <div class="grey--text">Comment</div>
+                          </v-flex>
+                          <v-flex xs9>
+                            <v-textarea
+                              v-model="userComment"
+                              name="comment"
+                              outline
+                          ></v-textarea>
+                          </v-flex>
+                        </v-layout>
+                      </v-flex>
+                    </v-layout>
+                    
+                    
+                  </div>
+              </v-container>
+          </div>
+        <!--</v-card-text> -->
       </v-card>
     </v-dialog>
     <v-container>
@@ -304,6 +351,47 @@
           </template>
         </v-layout>
       </div>
+      <div v-if="activeTab == 2 && $can('individual_request_service')" class="mt-2">
+        <v-layout column>
+          <template v-for="(worker, index) in allIndividualHistorical">
+            <v-flex xs12 class="mb-1">
+              <v-card
+                elevation="0"
+                class="grey lighten-4 login-circle pa-2"
+                @click="goToHProfile(index)"
+              >
+                <v-layout row wrap>
+                  <v-flex xs3>
+                    <v-avatar
+                      size="70"
+                      color="grey lighten-4"
+                    >
+                      <img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" alt="avatar">
+                    </v-avatar>
+                  </v-flex>
+                  <v-flex xs9>
+                    <div><b>{{worker.recipient.first_name}} {{worker.recipient.last_name}}</b></div>
+                    <div class="grey--text">{{worker.recipient.health_worker_profile.worker_category.name}} - {{worker.recipient.health_worker_profile.worker_sub_category.name}}</div>
+                    <div>
+                      <v-rating
+                      :value="4.5"
+                      color="amber"
+                      dense
+                      half-increments
+                      readonly
+                      size="14"
+                      ></v-rating>
+                    </div>
+                    <div class="mt-1"><v-icon small class="mr-2">calendar_today</v-icon>{{formattedDate(worker.created_at)}}</div>
+                    <div class="mt-1"><v-icon small class="mr-2">access_time</v-icon>{{worker.from}} - {{worker.to}} Hrs</div>
+                    
+                  </v-flex>
+                </v-layout>
+              </v-card>
+            </v-flex>
+          </template>
+        </v-layout>
+      </div>
     </v-container>
   </div>
 </template>
@@ -318,6 +406,7 @@ html, body {
 </style>
 <script>
     import apiCall from '@/utils/api'
+    import format from 'date-fns/format'
     import { mapGetters, mapActions } from 'vuex'
 
     import * as Vue2Leaflet from 'vue2-leaflet'
@@ -353,8 +442,13 @@ html, body {
                 color: '',
                 loading: false,
 
+                userRating: null,
+                userComment: null,
+
                 acceptLoading: false,
                 rejectLoading: false,
+                completeLoading: false,
+                cancelLoading: false,
 
                 profileDialog: false,
 
@@ -385,10 +479,15 @@ html, body {
            ...mapActions(['fetchIndividualUpcoming', 'fetchIndividualHistorical', 'fetchWorkerUpcoming']),
           initialize(){
             this.fetchIndividualUpcoming()
+            this.fetchIndividualHistorical()
             this.fetchWorkerUpcoming()
           },
           goToProfile(index){
             this.profile = this.allIndividualUpcoming[index]
+            this.profileDialog = true
+          },
+          goToHProfile(index){
+            this.profile = this.allIndividualHistorical[index]
             this.profileDialog = true
           },
           goToIndividualProfile(index){
@@ -401,6 +500,36 @@ html, body {
             } else {
               this.activeTab = 2
             }
+          },
+          completeRequest(id){
+            this.completeLoading = true
+            var formData = {
+              type: 'complete'
+            }
+            apiCall({url: '/api/userRequest/'+id, data: formData, method: 'PUT' })
+              .then(resp => {
+                this.completeLoading = false
+                this.profileDialog = false
+                this.fetchWorkerUpcoming()
+              })
+              .catch(error => {
+                this.completeLoading = false
+              })
+          },
+          cancelRequest(id){
+            this.cancelLoading = true
+            var formData = {
+              type: 'cancel'
+            }
+            apiCall({url: '/api/userRequest/'+id, data: formData, method: 'PUT' })
+              .then(resp => {
+                this.cancelLoading = false
+                this.profileDialog = false
+                this.fetchWorkerUpcoming()
+              })
+              .catch(error => {
+                this.cancelLoading = false
+              })
           },
           acceptRequest(id){
             this.acceptLoading = true
@@ -431,11 +560,13 @@ html, body {
               .catch(error => {
                 this.rejectLoading = false
               })
-          }
+          },
+          formattedDate(date){
+        	  return date ? format(date, 'Do MMM YYYY') : ''
+    	    },
         },
         computed: {
-        ...mapGetters(['allIndividualUpcoming', 'allWorkerUpcoming']),
-
+        ...mapGetters(['allIndividualUpcoming', 'allIndividualHistorical', 'allWorkerUpcoming']),
         }
     }
 </script>
