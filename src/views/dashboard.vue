@@ -558,6 +558,7 @@ html, body {
   import apiCall from '@/utils/api'
   import Vue from 'vue'
   import { mapGetters, mapActions } from 'vuex'
+  import 'leaflet/dist/leaflet.css'
 
   import * as Vue2Leaflet from 'vue2-leaflet'
   import { latLng, Icon, icon } from 'leaflet'
@@ -566,6 +567,14 @@ html, body {
   import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
 
   Vue.component('v-marker-cluster', Vue2LeafletMarkerCluster)
+
+  delete Icon.Default.prototype._getIconUrl;
+
+  Icon.Default.mergeOptions({
+    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+    iconUrl: require('leaflet/dist/images/marker-icon.png'),
+    shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+  });
 
   export default {
     components: {
@@ -656,9 +665,9 @@ html, body {
       navigator.geolocation.getCurrentPosition(this.currentPosition);
       this.fetchWorkerCategories()
     },
-    mounted(){
-      //this.$refs.myMapRef.mapObject.invalidateSize()
-    },
+    mounted () {
+          
+        },
     watch: {
       
     },
@@ -889,7 +898,9 @@ html, body {
       },
       newRequest(){
         this.requestDialog = true
-        //this.$refs.myMapRef.mapObject.invalidateSize()
+        this.$nextTick(() => {
+            this.$refs.myMapRef.mapObject.invalidateSize();
+          })
       },
       pickCategory(category){
         if(category == 1){
