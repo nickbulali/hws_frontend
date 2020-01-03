@@ -25,10 +25,10 @@
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
-        <!--<v-card-text style="height: 100%;">-->
+        <v-card-text style="height: 100%; padding: 0px">
           <div v-if="profileDialog == true">
             <v-img
-              height="220px"
+              height="100%"
               src="https://cdn.vuetifyjs.com/images/cards/server-room.jpg"
             >
               <v-layout column>
@@ -54,13 +54,13 @@
               </v-layout>
             </v-img>
               <v-container>
-                <div class="mt-3" v-if="$can('individual_request_service')">{{profile.recipient.health_worker_profile.bio}}</div>
+                <div v-if="$can('individual_request_service')">{{profile.recipient.health_worker_profile.bio}}</div>
                 <div class="my-4 subtitle-1 black--text" v-if="$can('individual_request_service')">
                   {{profile.recipient.health_worker_profile.residence}}
                 </div>
                 <div v-if="$can('individual_request_service')">
                   <v-rating
-                    :value="4.5"
+                    :value="profile.rating"
                     color="amber"
                     dense
                     half-increments
@@ -68,7 +68,7 @@
                     size="14"
                   ></v-rating>
                 </div>
-                <div class="grey--text" v-if="$can('individual_request_service')">4.5 (413)</div>
+                <div class="grey--text" v-if="$can('individual_request_service')"><v-icon small left>people</v-icon>{{profile.rating.toFixed(1)}}/5 ({{profile.reviewers}})</div>
                 <div v-if="$can('receive_service')"><v-icon small left>local_phone</v-icon>{{profile.requester.phone_no}}</div>
                 <div v-if="profile.status_id == 1 || profile.status_id == 2"><v-icon small left>my_location</v-icon>{{profile.distance.toFixed(2)}}Km away</div>
 
@@ -118,19 +118,19 @@
                       </v-marker>
                     </v-map>
                   </div>
-                  <div v-if="profile.status_id == 3">
+                  <div v-if="profile.status_id == 3 && profile.hasRated == 0">
                   <div align="center" class="my-3"><b>Review</b></div>
                     <v-layout column>
                       <v-flex xs12>
                         <v-layout row wrap>
                           <v-flex xs3>
-                            <div class="grey--text">Rating</div>
+                            <div class="grey--text mt-1">Rating</div>
                           </v-flex>
                           <v-flex xs9>
                             <v-rating 
                               color="yellow darken-3"
                               small 
-                              v-model="userRating"></v-rating>
+                              v-model="review.userRating"></v-rating>
                           </v-flex>
                         </v-layout>
                       </v-flex>
@@ -140,11 +140,19 @@
                             <div class="grey--text">Comment</div>
                           </v-flex>
                           <v-flex xs9>
-                            <v-textarea
-                              v-model="userComment"
-                              name="comment"
-                              outline
-                          ></v-textarea>
+                            <v-layout column>
+                              <v-flex xs12>
+                                <v-textarea
+                                  class="mt-1"
+                                  v-model="review.userComment"
+                                  name="comment"
+                                  outline
+                                ></v-textarea>
+                              </v-flex>
+                              <v-flex xs12>
+                                <v-btn depressed block class="primary text-none" :loading="ratingLoader" @click="saveRating(profile.id)">Save</v-btn>
+                              </v-flex>
+                            </v-layout>
                           </v-flex>
                         </v-layout>
                       </v-flex>
@@ -154,7 +162,7 @@
                   </div>
               </v-container>
           </div>
-        <!--</v-card-text> -->
+        </v-card-text>
       </v-card>
     </v-dialog>
     <v-container>
@@ -231,7 +239,7 @@
                     <div class="grey--text">{{worker.recipient.health_worker_profile.worker_category.name}} - {{worker.recipient.health_worker_profile.worker_sub_category.name}}</div>
                     <div>
                       <v-rating
-                      :value="4.5"
+                      :value="worker.rating"
                       color="amber"
                       dense
                       half-increments
@@ -272,7 +280,7 @@
                     <div class="grey--text">{{worker.recipient.health_worker_profile.worker_category.name}} - {{worker.recipient.health_worker_profile.worker_sub_category.name}}</div>
                     <div>
                       <v-rating
-                      :value="4.5"
+                      :value="worker.rating"
                       color="amber"
                       dense
                       half-increments
@@ -374,7 +382,7 @@
                     <div class="grey--text">{{worker.recipient.health_worker_profile.worker_category.name}} - {{worker.recipient.health_worker_profile.worker_sub_category.name}}</div>
                     <div>
                       <v-rating
-                      :value="4.5"
+                      :value="worker.rating"
                       color="amber"
                       dense
                       half-increments
@@ -442,13 +450,16 @@ html, body {
                 color: '',
                 loading: false,
 
-                userRating: null,
-                userComment: null,
+                review: {
+                  userRating: null,
+                  userComment: null
+                },
 
                 acceptLoading: false,
                 rejectLoading: false,
                 completeLoading: false,
                 cancelLoading: false,
+                ratingLoader: false,
 
                 profileDialog: false,
 
@@ -469,6 +480,8 @@ html, body {
                 popupName: null,
                 icon: customicon,
                 clusterOptions: {},
+
+                profileIndex: null
             }
         },
         created(){
@@ -476,7 +489,7 @@ html, body {
         },
         
         methods:{
-           ...mapActions(['fetchIndividualUpcoming', 'fetchIndividualHistorical', 'fetchWorkerUpcoming']),
+           ...mapActions(['fetchIndividualUpcoming', 'fetchIndividualHistorical', 'fetchWorkerUpcoming', 'fetchWorkerHistorical']),
           initialize(){
             this.fetchIndividualUpcoming()
             this.fetchIndividualHistorical()
@@ -487,6 +500,7 @@ html, body {
             this.profileDialog = true
           },
           goToHProfile(index){
+            this.profileIndex = index
             this.profile = this.allIndividualHistorical[index]
             this.profileDialog = true
           },
@@ -499,6 +513,33 @@ html, body {
               this.activeTab = 1
             } else {
               this.activeTab = 2
+            }
+          },
+          saveRating(id){
+            this.review.workerId = id
+            if (this.review.userRating == null){
+              this.message = "Please add a Rating"
+              this.color="error"
+              this.snackbar = true
+            }else{
+              this.ratingLoader = true
+              apiCall({url: '/api/userRating', data: this.review, method: 'POST' })
+              .then(resp => {
+                this.profile.hasRated = 1
+                this.message = "Review added Successfully"
+                this.color="success"
+                this.snackbar = true
+                this.ratingLoader = false
+                this.fetchIndividualHistorical()
+                setTimeout(() => {
+                  this.profile = this.allIndividualHistorical[this.profileIndex]
+                  this.fetchIndividualUpcoming()
+                }, 2000);
+                
+              })
+              .catch(error => {
+                this.ratingLoader = false
+              })
             }
           },
           completeRequest(id){
@@ -526,6 +567,7 @@ html, body {
                 this.cancelLoading = false
                 this.profileDialog = false
                 this.fetchWorkerUpcoming()
+                this.fetchWorkerHistorical()
               })
               .catch(error => {
                 this.cancelLoading = false
@@ -566,7 +608,7 @@ html, body {
     	    },
         },
         computed: {
-        ...mapGetters(['allIndividualUpcoming', 'allIndividualHistorical', 'allWorkerUpcoming']),
+        ...mapGetters(['allIndividualUpcoming', 'allIndividualHistorical', 'allWorkerUpcoming', 'allWorkerHistorical']),
         }
     }
 </script>

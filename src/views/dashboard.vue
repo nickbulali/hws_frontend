@@ -291,6 +291,7 @@
         </div>
         <div v-if="progress == 'Worker List'">
           <v-layout column>
+            <div v-if="workers.length == 0">No Results Found</div>
             <v-flex xs12 v-for="(worker, index) in workers" :key="index" class="mb-1">
               <v-card
                 elevation="0"
@@ -311,7 +312,7 @@
                     <div class="grey--text">{{worker.health_worker_profile.worker_category.name}} - {{worker.health_worker_profile.worker_sub_category.name}}</div>
                     <div>
                       <v-rating
-                      :value="4.5"
+                      :value="worker.rating"
                       color="amber"
                       dense
                       half-increments
@@ -442,7 +443,7 @@
           </div>
           <div>
             <v-rating
-              :value="4.5"
+              :value="profile.rating"
               color="amber"
               dense
               half-increments
@@ -450,8 +451,8 @@
               size="14"
             ></v-rating>
           </div>
-          <div class="grey--text">4.5 (413)</div>
-          <div class="mt-2">{{profile.distance.toFixed(2)}}Km away</div>
+          <div class="grey--text mt-2"><v-icon small left>people</v-icon>{{profile.rating.toFixed(1)}}/5 ({{profile.reviewers}})</div>
+          <div class="mt-2"><v-icon small left>my_location</v-icon>{{profile.distance.toFixed(2)}}Km away</div>
         
         <v-divider class="mx-4"></v-divider>
       
