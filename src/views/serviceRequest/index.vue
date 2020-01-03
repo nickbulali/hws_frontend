@@ -150,7 +150,7 @@
                                 ></v-textarea>
                               </v-flex>
                               <v-flex xs12>
-                                <v-btn depressed block class="primary text-none" :loading="ratingLoader" @click="saveRating(profile.id)">Save</v-btn>
+                                <v-btn depressed block class="primary text-none" :loading="ratingLoader" @click="saveRating(profile.recipient.id)">Save</v-btn>
                               </v-flex>
                             </v-layout>
                           </v-flex>
