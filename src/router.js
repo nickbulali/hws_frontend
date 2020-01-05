@@ -7,6 +7,7 @@ import Register from './components/auth/register.vue'
 
 import Dashboard from './views/dashboard.vue'
 import serviceRequest from './views/serviceRequest/index.vue'
+import Favourite from './views/favourite/index.vue'
 
 import Profile from './views/profile/index.vue'
 
@@ -68,6 +69,12 @@ export default new Router({
       path: '/profile',
       name: 'profile',
       component: Profile,
+      beforeEnter: ifAuthenticated,
+    },
+    {
+      path: '/favourites',
+      name: 'favourite',
+      component: Favourite,
       beforeEnter: ifAuthenticated,
     },
   ]

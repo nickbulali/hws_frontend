@@ -92,10 +92,12 @@
                     </v-flex>
                   </v-layout>
                 </div>
-            
                 <v-divider class="mx-1 my-2"></v-divider>
+                  <div v-if="profile.status_id == 3 && $can('individual_request_service') && profile.isFavourite == 0">
+                    <v-btn block depressed class="success white--text text-none ml-1" :loading="favouriteLoading" @click="addToFavourite(profile.recipient.id)">Add to Favourites</v-btn>
+                  </div>
                   <div v-if="profile.status_id == 1 || profile.status_id == 2">
-                    <v-map v-if="$can('individual_request_service')" ref="myMapRef" style="position: absolute; width: 92%; height: 180px; z-index: 2" :center="[profile.workerLocation[0], profile.workerLocation[1]]" :zoom="15">
+                    <v-map v-if="$can('individual_request_service')" ref="myMapRef" style="position: relative; width: 100%; height: 180px; z-index: 2" :center="[profile.workerLocation[0], profile.workerLocation[1]]" :zoom="15">
                       <v-icondefault class="mt-5"></v-icondefault>
                       <v-tilelayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></v-tilelayer>
                       <v-marker
@@ -106,7 +108,7 @@
                         <v-popup :content="profile.recipient.first_name"></v-popup>
                       </v-marker>
                     </v-map>
-                    <v-map v-if="$can('receive_service')" ref="myMapRef" style="position: absolute; width: 92%; height: 250px; z-index: 2" :center="[profile.latitude, profile.longitude]" :zoom="15">
+                    <v-map v-if="$can('receive_service')" ref="myMapRef" style="position: relative; width: 100%; height: 250px; z-index: 2" :center="[profile.latitude, profile.longitude]" :zoom="15">
                       <v-icondefault class="mt-5"></v-icondefault>
                       <v-tilelayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></v-tilelayer>
                       <v-marker
@@ -297,6 +299,15 @@
             </v-flex>
           </template>
         </v-layout>
+        <div v-if="upcomingLength" class="text-xs-center">
+          <v-pagination
+            :length="upcomingLength"
+            total-visible="5"
+            v-model="individualUpcomingPagination.current_page"
+            @input="nextUpcoming"
+            circle>
+          </v-pagination>
+        </div>
       </div>
       <div v-if="activeTab == 1 && $can('receive_service')" class="mt-2">
         <v-layout column>
@@ -399,6 +410,15 @@
             </v-flex>
           </template>
         </v-layout>
+        <div v-if="historicalLength" class="text-xs-center">
+          <v-pagination
+            :length="historicalLength"
+            total-visible="5"
+            v-model="individualHistoricalPagination.current_page"
+            @input="nextHistorical"
+            circle>
+          </v-pagination>
+        </div>
       </div>
     </v-container>
   </div>
@@ -460,6 +480,7 @@ html, body {
                 completeLoading: false,
                 cancelLoading: false,
                 ratingLoader: false,
+                favouriteLoading: false,
 
                 profileDialog: false,
 
@@ -491,8 +512,8 @@ html, body {
         methods:{
            ...mapActions(['fetchIndividualUpcoming', 'fetchIndividualHistorical', 'fetchWorkerUpcoming', 'fetchWorkerHistorical']),
           initialize(){
-            this.fetchIndividualUpcoming()
-            this.fetchIndividualHistorical()
+            this.fetchIndividualUpcoming(this.individualUpcomingPagination.current_page)
+            this.fetchIndividualHistorical(this.individualHistoricalPagination.current_page)
             this.fetchWorkerUpcoming()
           },
           goToProfile(index){
@@ -515,6 +536,31 @@ html, body {
               this.activeTab = 2
             }
           },
+          nextUpcoming(){
+            this.fetchIndividualUpcoming(this.individualUpcomingPagination.current_page)
+          },
+          nextHistorical(){
+            this.fetchIndividualHistorical(this.individualHistoricalPagination.current_page)
+          },
+          addToFavourite(id){
+            var formData = {
+              workerId: id,
+            }
+            this.favouriteLoading = true 
+            apiCall({url: '/api/userFavourite', data: formData, method: 'POST' })
+              .then(resp => {
+                this.profile.isFavourite = 1
+                this.message = "Added to Favourites Successfully"
+                this.color="success"
+                this.snackbar = true
+                this.favouriteLoading = false
+                this.fetchIndividualHistorical(this.individualHistoricalPagination.current_page)  
+                this.fetchIndividualUpcoming(this.individualUpcomingPagination.current_page)                
+              })
+              .catch(error => {
+                this.favouriteLoading = false
+              })
+          },
           saveRating(id){
             this.review.workerId = id
             if (this.review.userRating == null){
@@ -533,7 +579,7 @@ html, body {
                 this.fetchIndividualHistorical()
                 setTimeout(() => {
                   this.profile = this.allIndividualHistorical[this.profileIndex]
-                  this.fetchIndividualUpcoming()
+                  this.fetchIndividualUpcoming(this.individualUpcomingPagination.current_page)
                 }, 2000);
                 
               })
@@ -608,7 +654,20 @@ html, body {
     	    },
         },
         computed: {
-        ...mapGetters(['allIndividualUpcoming', 'allIndividualHistorical', 'allWorkerUpcoming', 'allWorkerHistorical']),
+          ...mapGetters([
+            'allIndividualUpcoming',
+            'allIndividualHistorical',
+            'allWorkerUpcoming',
+            'allWorkerHistorical',
+            'individualHistoricalPagination',
+            'individualUpcomingPagination',
+          ]),
+          upcomingLength: function() {
+            return Math.ceil(this.individualUpcomingPagination.total / this.individualUpcomingPagination.per_page);
+          },
+          historicalLength: function() {
+            return Math.ceil(this.individualHistoricalPagination.total / this.individualHistoricalPagination.per_page);
+          },
         }
     }
 </script>

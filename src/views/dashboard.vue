@@ -664,7 +664,7 @@ html, body {
     },
     created(){
       navigator.geolocation.getCurrentPosition(this.currentPosition);
-      this.fetchWorkerCategories()
+      this.initialize()
     },
     mounted () {
           
@@ -673,8 +673,14 @@ html, body {
       
     },
     methods:{
-      ...mapActions(['fetchWorkerCategories']),
+      ...mapActions(['fetchWorkerCategories', 'fetchIndividualUpcoming', 'fetchIndividualHistorical', 'fetchWorkerUpcoming', 'fetchWorkerHistorical']),
       allowedStep: m => m % 5 === 0,
+      initialize(){
+        this.fetchWorkerCategories()
+        this.fetchIndividualUpcoming(this.individualUpcomingPagination.current_page)
+        this.fetchIndividualHistorical(this.individualHistoricalPagination.current_page)
+        this.fetchWorkerUpcoming()
+      },
       resetFilter(){
         this.maleOutline = true
         this.femaleOutline = true
@@ -965,7 +971,11 @@ html, body {
       }
     },
     computed: {
-      ...mapGetters(['allWorkerCategories']),
+      ...mapGetters([
+        'allWorkerCategories',
+        'individualUpcomingPagination',
+        'individualHistoricalPagination'
+      ]),
       now(){
         var today = new Date();
         var now = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();

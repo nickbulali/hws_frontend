@@ -4,7 +4,7 @@ export const ability = new Ability()
 
 export const abilityPlugin = (store) => { 
   ability.update(store.state.abilities.rules);
-  console.log("permissions aryye",store.state.abilities.rules)
+  //console.log("permissions aryye",store.state.abilities.rules)
   return store.subscribe((mutation) => {
     ability.update(store.state.abilities.rules);
     //console.log("permissions aryye",store.state.abilities.rules)

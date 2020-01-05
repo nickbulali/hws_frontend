@@ -39,24 +39,26 @@ const getters = {
     allIndividualUpcoming: (state) => state.individualUpcoming,
     allIndividualHistorical: (state) => state.individualHistorical,
     allWorkerUpcoming: (state) => state.workerUpcoming,
-    allWorkerHistorical: (state) => state.workerlHistorical,
+	allWorkerHistorical: (state) => state.workerlHistorical,
+	individualUpcomingPagination: (state) => state.individualUpcomingPagination,
+	individualHistoricalPagination: (state) => state.individualHistoricalPagination,
 };
 
 const actions = {
-	async fetchIndividualUpcoming({commit}) {
-		const response = await apiCall({url: '/api/userRequest?type=individualUpcoming', method: 'GET' });
+	async fetchIndividualUpcoming({commit}, page) {
+		const response = await apiCall({url: `/api/userRequest?page=${page}&type=individualUpcoming`, method: 'GET' });
 		commit('setIndividualUpcoming', response)
     },
-    async fetchIndividualHistorical({commit}) {
-		const response = await apiCall({url: '/api/userRequest?type=individualHistorical', method: 'GET' });
+    async fetchIndividualHistorical({commit}, page) {
+		const response = await apiCall({url: `/api/userRequest?page=${page}&type=individualHistorical`, method: 'GET' });
 		commit('setIndividualHistorical', response)
     },
-    async fetchWorkerUpcoming({commit}) {
-		const response = await apiCall({url: '/api/userRequest?type=workerUpcoming', method: 'GET' });
+    async fetchWorkerUpcoming({commit}, page) {
+		const response = await apiCall({url: `/api/userRequest?page=${page}&type=workerUpcoming`, method: 'GET' });
 		commit('setWorkerUpcoming', response)
     },
-    async fetchWorkerHistorical({commit}) {
-		const response = await apiCall({url: '/api/userRequest?type=workerlHistorical', method: 'GET' });
+    async fetchWorkerHistorical({commit}, page) {
+		const response = await apiCall({url: `/api/userRequest?page=${page}&type=workerlHistorical`, method: 'GET' });
 		commit('setWorkerHistorical', response)
 	},
 };
