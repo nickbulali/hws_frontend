@@ -477,6 +477,76 @@
 
   	<v-container class="my-2">
   		<v-layout column>
+      <div v-if="$can('receive_service')" class="mb-2">
+          <v-layout column>
+            <v-flex xs12>
+              <v-layout row wrap>
+                <v-flex xs6>
+                  <v-avatar
+                    class="profile"
+                    color="grey"
+                    size="164"
+                    tile
+                  >
+                    <v-img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg"></v-img>
+                  </v-avatar>
+                </v-flex>
+                <v-flex xs6>
+                  <v-layout column>
+                    <v-flex xs12>
+                      <div align="center" class="grey--text headline">{{stats.first_name}} {{stats.last_name}}</div>
+                    </v-flex>
+                    <v-flex xs12 class="mt-4">
+                      <v-layout row wrap>
+                    
+                    <v-flex xs6>
+                      <v-layout column>
+                        <v-flex xs12>
+                          <div align="center" class="grey--text title">
+                            Visits
+                          </div>
+                        </v-flex>
+                        <v-flex xs12>
+                          <div align="center" class="grey--text">
+                            {{stats.totalVisits}}
+                          </div>
+                        </v-flex>
+                      </v-layout>
+                    </v-flex>
+                    <v-flex xs6>
+                      <v-layout column>
+                        <v-flex xs12>
+                          <div align="center" class="grey--text title">
+                            Rating
+                          </div>
+                        </v-flex>
+                        <v-flex xs12>
+                          <div align="center" class="grey--text">
+                            {{stats.rating.toFixed(1)}}/5
+                          </div>
+                        </v-flex>
+                      </v-layout>
+                    </v-flex>
+                  </v-layout>
+                    </v-flex>
+                  </v-layout>
+                  
+                  <v-divider></v-divider>
+                  <div>
+                    <v-btn depressed block class="text-none orange darken-4 white--text" :loading="offlineLoading" v-if="stats.profile.active == 1" @click="goOffline">
+                      Go Offline
+                      <v-icon right small>settings_ethernet</v-icon>
+                    </v-btn>
+                    <v-btn depressed block class="text-none green darken-1 white--text" :loading="onlineLoading" v-if="stats.profile.active == 0" @click="goOnline">
+                      Go Online
+                      <v-icon right small>settings_input_antenna</v-icon>
+                    </v-btn>
+                  </div>
+                </v-flex>
+              </v-layout>
+            </v-flex>
+          </v-layout>
+        </div>
   		  <v-flex xs12>
           <div align="center" class="mt-3">
             <v-img
@@ -513,7 +583,7 @@
                 </v-layout>
               </div>
             </v-flex>
-            <v-flex xs12>
+            <!--<v-flex xs12>
               <div class="primary login-circle mt-3">
                 <v-layout row wrap>
                   <v-flex xs3>
@@ -537,9 +607,10 @@
                   </v-flex>
                 </v-layout>
               </div>
-            </v-flex>
+            </v-flex>-->
           </div>
         </div>
+        
       </v-layout>
   	</v-container>
 
@@ -595,6 +666,8 @@ html, body {
       return {
         filterDialog: false,
 
+        offlineLoading: false,
+        onlineLoading: false,
         maleOutline: true,
         femaleOutline: true,
         darkMale: false,
@@ -673,13 +746,44 @@ html, body {
       
     },
     methods:{
-      ...mapActions(['fetchWorkerCategories', 'fetchIndividualUpcoming', 'fetchIndividualHistorical', 'fetchWorkerUpcoming', 'fetchWorkerHistorical']),
+      ...mapActions(['fetchstats', 'fetchWorkerCategories', 'fetchIndividualUpcoming', 'fetchIndividualHistorical', 'fetchWorkerUpcoming', 'fetchWorkerHistorical']),
       allowedStep: m => m % 5 === 0,
       initialize(){
+        this.fetchstats()
         this.fetchWorkerCategories()
         this.fetchIndividualUpcoming(this.individualUpcomingPagination.current_page)
         this.fetchIndividualHistorical(this.individualHistoricalPagination.current_page)
         this.fetchWorkerUpcoming()
+      },
+      goOnline(){
+        var formData = {
+          type: 'online'
+        }
+        this.onlineLoading = true
+        apiCall({url: '/api/user/'+this.getProfile.id, data: formData, method: 'PUT' })
+          .then(resp => {
+            this.stats.profile.active = 1
+            this.onlineLoading = false
+            this.fetchstats()
+          })
+          .catch(error => {
+            this.onlineLoading = false
+          })
+      },
+      goOffline(){
+        var formData = {
+          type: 'offline'
+        }
+        this.offlineLoading = true
+        apiCall({url: '/api/user/'+this.getProfile.id, data: formData, method: 'PUT' })
+          .then(resp => {
+            this.stats.profile.active = 0
+            this.offlineLoading = false
+            this.fetchstats()
+          })
+          .catch(error => {
+            this.offlineLoading = false
+          })
       },
       resetFilter(){
         this.maleOutline = true
@@ -972,6 +1076,8 @@ html, body {
     },
     computed: {
       ...mapGetters([
+        'getProfile',
+        'stats',
         'allWorkerCategories',
         'individualUpcomingPagination',
         'individualHistoricalPagination'

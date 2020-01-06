@@ -4,7 +4,7 @@ const state = {
     individualUpcoming: [],
     individualHistorical: [],
     workerUpcoming: [],
-    workerlHistorical: [],
+    workerHistorical: [],
     individualUpcomingPagination: {
 		search: ' ',
 		current_page: 1,
@@ -32,16 +32,18 @@ const state = {
 		per_page: 0,
 	    total: 0,
 	    visible: 10
-	}
+    },
 };
 
 const getters = {
     allIndividualUpcoming: (state) => state.individualUpcoming,
     allIndividualHistorical: (state) => state.individualHistorical,
     allWorkerUpcoming: (state) => state.workerUpcoming,
-	allWorkerHistorical: (state) => state.workerlHistorical,
+	allWorkerHistorical: (state) => state.workerHistorical,
 	individualUpcomingPagination: (state) => state.individualUpcomingPagination,
 	individualHistoricalPagination: (state) => state.individualHistoricalPagination,
+	workerUpcomingPagination: (state) => state.workerUpcomingPagination,
+	workerHistoricalPagination: (state) => state.workerHistoricalPagination,
 };
 
 const actions = {
@@ -58,7 +60,7 @@ const actions = {
 		commit('setWorkerUpcoming', response)
     },
     async fetchWorkerHistorical({commit}, page) {
-		const response = await apiCall({url: `/api/userRequest?page=${page}&type=workerlHistorical`, method: 'GET' });
+		const response = await apiCall({url: `/api/userRequest?page=${page}&type=workerHistorical`, method: 'GET' });
 		commit('setWorkerHistorical', response)
 	},
 };
@@ -83,10 +85,10 @@ const mutations = {
 		state.workerUpcomingPagination.per_page = userRequest.per_page
     },
     setWorkerHistorical: (state, userRequest) => {
-		state.workerlHistorical = userRequest.data
-		state.workerlHistoricalPagination.current_page = userRequest.current_page
-		state.workerlHistoricalPagination.total = userRequest.total
-		state.workerlHistoricalPagination.per_page = userRequest.per_page
+		state.workerHistorical = userRequest.data
+		state.workerHistoricalPagination.current_page = userRequest.current_page
+		state.workerHistoricalPagination.total = userRequest.total
+		state.workerHistoricalPagination.per_page = userRequest.per_page
 	},
 };
 

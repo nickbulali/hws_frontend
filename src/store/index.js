@@ -8,6 +8,7 @@ import abilities from './modules/abilities'
 import notifications from './modules/notifications'
 import serviceRequests from './modules/serviceRequests'
 
+import stats from './modules/stats'
 import favourites from './modules/favourites'
 import workerCategories from './modules/workerCategories'
 import workerSubCategories from './modules/workerSubCategories'
@@ -40,6 +41,7 @@ export default new Vuex.Store({
     user,
     auth,
     roles,
+    stats,
     abilities,
     favourites,
     notifications,

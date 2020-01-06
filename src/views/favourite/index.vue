@@ -71,7 +71,7 @@
 
                 <v-divider class="mx-1 my-2"></v-divider>
                   <div class="my-2"><b>Quick Request</b></div>
-                  <div>
+                  <div v-if="profile.worker.health_worker_profile.active == 1">
                     <v-layout column>
                         <v-flex xs12>
                             <v-menu
@@ -170,7 +170,8 @@
                             </v-btn>
                         </v-flex>
                     </v-layout>
-                  </div>                  
+                  </div>
+                  <div class="grey--text" v-if="profile.worker.health_worker_profile.active == 0">{{profile.worker.first_name}} {{profile.worker.last_name}} is currently Unavailable</div>
               </v-container>
           </div>
         </v-card-text>

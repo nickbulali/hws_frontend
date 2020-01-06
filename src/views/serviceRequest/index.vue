@@ -369,6 +369,15 @@
             </v-flex>
           </template>
         </v-layout>
+        <div v-if="workerUpcomingLength" class="text-xs-center">
+          <v-pagination
+            :length="workerUpcomingLength"
+            total-visible="5"
+            v-model="workerUpcomingPagination.current_page"
+            @input="nextWorkerUpcoming"
+            circle>
+          </v-pagination>
+        </div>
       </div>
       <div v-if="activeTab == 2 && $can('individual_request_service')" class="mt-2">
         <v-layout column>
@@ -416,6 +425,45 @@
             total-visible="5"
             v-model="individualHistoricalPagination.current_page"
             @input="nextHistorical"
+            circle>
+          </v-pagination>
+        </div>
+      </div>
+      <div v-if="activeTab == 2 && $can('receive_service')" class="mt-2">
+        <v-layout column>
+          <template v-for="(worker, index) in allWorkerHistorical">
+            <v-flex xs12 class="mb-1">
+              <v-card
+                elevation="0"
+                class="grey lighten-4 login-circle pa-2"
+                @click=""
+              >
+                <v-layout row wrap>
+                  <v-flex xs3>
+                    <v-avatar
+                      size="70"
+                      color="grey lighten-4"
+                    >
+                      <img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" alt="avatar">
+                    </v-avatar>
+                  </v-flex>
+                  <v-flex xs9>
+                    <div><b>{{worker.requester.first_name}} {{worker.requester.last_name}}</b></div>
+                    <div class="mt-1"><v-icon small class="mr-2">calendar_today</v-icon>{{formattedDate(worker.created_at)}}</div>
+                    <div class="mt-1"><v-icon small class="mr-2">access_time</v-icon>{{worker.from}} - {{worker.to}} Hrs</div>
+                    
+                  </v-flex>
+                </v-layout>
+              </v-card>
+            </v-flex>
+          </template>
+        </v-layout>
+        <div v-if="workerHistoricalLength" class="text-xs-center">
+          <v-pagination
+            :length="workerHistoricalLength"
+            total-visible="5"
+            v-model="workerHistoricalPagination.current_page"
+            @input="nextWorkerHistorical"
             circle>
           </v-pagination>
         </div>
@@ -514,7 +562,8 @@ html, body {
           initialize(){
             this.fetchIndividualUpcoming(this.individualUpcomingPagination.current_page)
             this.fetchIndividualHistorical(this.individualHistoricalPagination.current_page)
-            this.fetchWorkerUpcoming()
+            this.fetchWorkerUpcoming(this.workerUpcomingPagination.current_page)
+            this.fetchWorkerHistorical(this.workerHistoricalPagination.current_page)
           },
           goToProfile(index){
             this.profile = this.allIndividualUpcoming[index]
@@ -541,6 +590,12 @@ html, body {
           },
           nextHistorical(){
             this.fetchIndividualHistorical(this.individualHistoricalPagination.current_page)
+          },
+          nextWorkerHistorical(){
+            this.fetchWorkerHistorical(this.workerHistoricalPagination.current_page)
+          },
+          nextWorkerUpcoming(){
+            this.fetchWorkerUpcoming(this.workerUpcomingPagination.current_page)
           },
           addToFavourite(id){
             var formData = {
@@ -576,7 +631,7 @@ html, body {
                 this.color="success"
                 this.snackbar = true
                 this.ratingLoader = false
-                this.fetchIndividualHistorical()
+                this.fetchIndividualHistorical(this.individualHistoricalPagination.current_page)
                 setTimeout(() => {
                   this.profile = this.allIndividualHistorical[this.profileIndex]
                   this.fetchIndividualUpcoming(this.individualUpcomingPagination.current_page)
@@ -597,7 +652,7 @@ html, body {
               .then(resp => {
                 this.completeLoading = false
                 this.profileDialog = false
-                this.fetchWorkerUpcoming()
+                this.fetchWorkerUpcoming(this.workerUpcomingPagination.current_page)
               })
               .catch(error => {
                 this.completeLoading = false
@@ -612,8 +667,8 @@ html, body {
               .then(resp => {
                 this.cancelLoading = false
                 this.profileDialog = false
-                this.fetchWorkerUpcoming()
-                this.fetchWorkerHistorical()
+                this.fetchWorkerUpcoming(this.workerUpcomingPagination.current_page)
+                this.fetchWorkerHistorical(this.workerHistoricalPagination.current_page)
               })
               .catch(error => {
                 this.cancelLoading = false
@@ -628,7 +683,7 @@ html, body {
               .then(resp => {
                 this.acceptLoading = false
                 this.profileDialog = false
-                this.fetchWorkerUpcoming()
+                this.fetchWorkerUpcoming(this.workerUpcomingPagination.current_page)
               })
               .catch(error => {
                 this.acceptLoading = false
@@ -643,7 +698,7 @@ html, body {
               .then(resp => {
                 this.rejectLoading = false
                 this.profileDialog = false
-                this.fetchWorkerUpcoming()
+                this.fetchWorkerUpcoming(this.workerUpcomingPagination.current_page)
               })
               .catch(error => {
                 this.rejectLoading = false
@@ -661,6 +716,8 @@ html, body {
             'allWorkerHistorical',
             'individualHistoricalPagination',
             'individualUpcomingPagination',
+            'workerUpcomingPagination',
+            'workerHistoricalPagination'
           ]),
           upcomingLength: function() {
             return Math.ceil(this.individualUpcomingPagination.total / this.individualUpcomingPagination.per_page);
@@ -668,6 +725,13 @@ html, body {
           historicalLength: function() {
             return Math.ceil(this.individualHistoricalPagination.total / this.individualHistoricalPagination.per_page);
           },
+          workerUpcomingLength: function() {
+            return Math.ceil(this.workerUpcomingPagination.total / this.workerUpcomingPagination.per_page);
+          },
+          workerHistoricalLength: function() {
+            return Math.ceil(this.workerHistoricalPagination.total / this.workerHistoricalPagination.per_page);
+          },
+          
         }
     }
 </script>
