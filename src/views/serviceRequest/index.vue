@@ -43,7 +43,7 @@
                   </v-avatar>
                 </v-flex>
                 <v-flex xs12>
-                  <div class="ma-2" v-if="$can('individual_request_service')">
+                  <div class="ma-2"  v-if="$can('individual_request_service') || $can('hospital_request_service')">
                     <div class="title white--text">{{profile.recipient.first_name}} {{profile.recipient.last_name}}</div>
                     <div class="white--text">{{profile.recipient.health_worker_profile.worker_category.name}} - {{profile.recipient.health_worker_profile.worker_sub_category.name}}</div>
                   </div>
@@ -54,11 +54,11 @@
               </v-layout>
             </v-img>
               <v-container>
-                <div v-if="$can('individual_request_service')">{{profile.recipient.health_worker_profile.bio}}</div>
-                <div class="my-4 subtitle-1 black--text" v-if="$can('individual_request_service')">
+                <div v-if="$can('individual_request_service') || $can('hospital_request_service')">{{profile.recipient.health_worker_profile.bio}}</div>
+                <div class="my-4 subtitle-1 black--text" v-if="$can('individual_request_service') || $can('hospital_request_service')">
                   {{profile.recipient.health_worker_profile.residence}}
                 </div>
-                <div v-if="$can('individual_request_service')">
+                <div v-if="$can('individual_request_service') || $can('hospital_request_service')">
                   <v-rating
                     :value="profile.rating"
                     color="amber"
@@ -68,7 +68,7 @@
                     size="14"
                   ></v-rating>
                 </div>
-                <div class="grey--text" v-if="$can('individual_request_service')"><v-icon small left>people</v-icon>{{profile.rating.toFixed(1)}}/5 ({{profile.reviewers}})</div>
+                <div class="grey--text" v-if="$can('individual_request_service') || $can('hospital_request_service')"><v-icon small left>people</v-icon>{{profile.rating.toFixed(1)}}/5 ({{profile.reviewers}})</div>
                 <div v-if="$can('receive_service')"><v-icon small left>local_phone</v-icon>{{profile.requester.phone_no}}</div>
                 <div v-if="profile.status_id == 1 || profile.status_id == 2"><v-icon small left>my_location</v-icon>{{profile.distance.toFixed(2)}}Km away</div>
 
@@ -97,7 +97,7 @@
                     <v-btn block depressed class="success white--text text-none ml-1" :loading="favouriteLoading" @click="addToFavourite(profile.recipient.id)">Add to Favourites</v-btn>
                   </div>
                   <div v-if="profile.status_id == 1 || profile.status_id == 2">
-                    <v-map v-if="$can('individual_request_service')" ref="myMapRef" style="position: relative; width: 100%; height: 180px; z-index: 2" :center="[profile.workerLocation[0], profile.workerLocation[1]]" :zoom="15">
+                    <v-map v-if="$can('individual_request_service') || $can('hospital_request_service')" ref="myMapRef" style="position: relative; width: 100%; height: 180px; z-index: 2" :center="[profile.workerLocation[0], profile.workerLocation[1]]" :zoom="15">
                       <v-icondefault class="mt-5"></v-icondefault>
                       <v-tilelayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></v-tilelayer>
                       <v-marker
@@ -168,7 +168,7 @@
       </v-card>
     </v-dialog>
     <v-container>
-      <div v-if="$can('individual_request_service')">
+      <div v-if="$can('individual_request_service') || $can('hospital_request_service')">
         <v-tabs
           color="transparent"
           grow
@@ -216,7 +216,7 @@
           </v-tab-item>
         </v-tabs>
       </div>
-      <div v-if="activeTab == 1 && $can('individual_request_service')" class="mt-2">
+      <div v-if="activeTab == 1 && $can('individual_request_service') || $can('hospital_request_service') || $can('hospital_request_service')" class="mt-2">
         <v-layout column>
           <div class="mt-2"><v-icon small class="mr-2 orange--text">lens</v-icon>Pending</div>
           <v-divider class="my-2"></v-divider>
@@ -379,7 +379,7 @@
           </v-pagination>
         </div>
       </div>
-      <div v-if="activeTab == 2 && $can('individual_request_service')" class="mt-2">
+      <div v-if="activeTab == 2 && $can('individual_request_service') || $can('hospital_request_service')" class="mt-2">
         <v-layout column>
           <template v-for="(worker, index) in allIndividualHistorical">
             <v-flex xs12 class="mb-1">

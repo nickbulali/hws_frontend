@@ -23,6 +23,26 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+    <v-dialog
+      v-model="workerlistDialog"
+      hide-overlay
+      persistent
+      width="300"
+    >
+      <v-card
+        color="secondary"
+        dark
+      >
+        <v-card-text>
+          Finding Professionals..
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   <v-dialog 
     fullscreen
     hide-overlay
@@ -40,7 +60,7 @@
           icon
           dark
           color="secondary"
-          v-if="progress != 'Time' && progress != 'Category' && progress != 'Worker List' && progress != 'Profile'"
+          v-if="progress != 'Time' && progress != 'Category' && progress !='hospitalList' && progress != 'Worker List' && progress != 'Profile'"
         >
           <v-icon color="secondary">keyboard_backspace</v-icon>
         </v-btn>
@@ -49,6 +69,14 @@
           dark
           v-if="progress == 'Time'"
           @click="showMap"
+        >
+          <v-icon>keyboard_backspace</v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          dark
+          v-if="progress == 'hospitalList'"
+          @click="backHospitallList"
         >
           <v-icon>keyboard_backspace</v-icon>
         </v-btn>
@@ -78,6 +106,19 @@
         </v-btn>
         <v-toolbar-title>New Request</v-toolbar-title>
         <v-spacer></v-spacer>
+        <v-btn @click="seeHospitalList" icon flat>
+          <v-badge
+            v-if="$can('hospital_request_service')"
+            overlap
+            color="red">
+            <v-icon
+              color="white"
+            >
+              assignment
+            </v-icon>
+            <span slot="badge" v-if="hospitalWorkerList.length !=0"> {{hospitalWorkerList.length}} </span>
+          </v-badge>
+        </v-btn>
         <v-btn
           icon
           dark
@@ -284,10 +325,67 @@
                 </v-flex>
               </v-layout>
             </v-flex>
+            <!--
             <v-flex 12>
               <v-btn class="primary white--text text-none mx-5" style="position: absolute; bottom: 5%; left:-12%"  block @click="listWorkers" :loading="loading">Next</v-btn>
             </v-flex>
+            -->
           </v-layout>
+        </div>
+        <div v-if="progress == 'hospitalList'">
+          <v-layout column>
+            <div v-if="hospitalWorkerList.length == 0">List is Empty</div>
+            <v-flex xs12 v-for="(worker, index) in hospitalWorkerList" :key="index" class="mb-1">
+              <v-card
+                elevation="0"
+                class="grey lighten-4 login-circle pa-2"
+              >
+                <v-layout row wrap>
+                  <v-flex xs3>
+                    <v-avatar
+                      size="70"
+                      color="grey lighten-4"
+                    >
+                      <img :src="path+'/pictures/'+worker.recipient.image" alt="avatar">
+                    </v-avatar>
+                  </v-flex>
+                  <v-flex xs9>
+                    <div><b>{{worker.recipient.first_name}} {{worker.recipient.last_name}}</b></div>
+                    <div class="grey--text">{{worker.health_worker_profile.worker_category.name}} - {{worker.health_worker_profile.worker_sub_category.name}}</div>
+                    <div>
+                      <v-rating
+                      :value="worker.rating"
+                      color="amber"
+                      dense
+                      half-increments
+                      readonly
+                      size="14"
+                      ></v-rating>
+                    </div>
+                    <div class="mt-2">{{worker.health_worker_profile.bio.substring(0,80)+".."}}</div>
+                    <div class="mt-1"><v-icon small class="mr-2">my_location</v-icon>{{worker.distance.toFixed(2)}}Km</div>
+                  </v-flex>
+                </v-layout>
+              </v-card>
+            </v-flex>
+            <v-flex xs12>
+              <v-divider class="mx-4"></v-divider>
+              <div align="center">
+                  <v-btn
+                    :loading="loading"
+                    depressed
+                    class="primary white--text text-none mt-2"
+                    text
+                    @click="completeHospitalRequest"
+                  >
+                    Complete
+                    <v-icon right class="white--text">
+                      done_all
+                    </v-icon>
+                  </v-btn>
+              </div>
+            </v-flex>
+          </v-layout>   
         </div>
         <div v-if="progress == 'Worker List'">
           <v-layout column>
@@ -304,7 +402,7 @@
                       size="70"
                       color="grey lighten-4"
                     >
-                      <img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" alt="avatar">
+                      <img :src="path+'/pictures/'+worker.image" alt="avatar">
                     </v-avatar>
                   </v-flex>
                   <v-flex xs9>
@@ -425,7 +523,7 @@
                   size="164"
                   tile
                 >
-                  <v-img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg"></v-img>
+                  <v-img :src="path+'/pictures/'+profile.image"></v-img>
                 </v-avatar>
               </v-flex>
               <v-flex xs12>
@@ -458,16 +556,30 @@
       
             <div align="center">
                 <v-btn
-                    :loading="loading"
-                    depressed
-                    class="primary white--text text-none mt-2"
-                    text
-                    @click="completeRequest"
+                  v-if="$can('individual_request_service')"
+                  :loading="loading"
+                  depressed
+                  class="primary white--text text-none mt-2"
+                  text
+                  @click="completeRequest"
                 >
-                    Complete
-                    <v-icon right class="white--text">
-                        done_all
-                    </v-icon>
+                  Complete
+                  <v-icon right class="white--text">
+                    done_all
+                  </v-icon>
+                </v-btn>
+                <v-btn
+                  v-if="$can('hospital_request_service')"
+                  :loading="loading"
+                  depressed
+                  class="primary white--text text-none mt-2"
+                  text
+                  @click="addHospitalList"
+                >
+                  Add to List
+                  <v-icon right class="white--text">
+                    assignment
+                  </v-icon>
                 </v-btn>
             </div>
         </div>
@@ -488,7 +600,10 @@
                     size="164"
                     tile
                   >
-                    <v-img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg"></v-img>
+                    <v-img :src="path+'/pictures/'+stats.image">
+                      <v-icon v-if="stats.profile.active == 1" small style="position: absolute; right: 2px;" class="green--text">lens</v-icon>
+                      <v-icon v-if="stats.profile.active == 0" small style="position: absolute; right: 2px;" class="red--text">lens</v-icon>
+                    </v-img>
                   </v-avatar>
                 </v-flex>
                 <v-flex xs6>
@@ -664,7 +779,9 @@ html, body {
       ))
 
       return {
+        path: process.env.VUE_APP_API_URL,
         filterDialog: false,
+        workerlistDialog: false,
 
         offlineLoading: false,
         onlineLoading: false,
@@ -724,6 +841,7 @@ html, body {
         },
 
         workers: [],
+        hospitalWorkerList: [],
         profile: {},
 
         workersPagination: {
@@ -732,7 +850,8 @@ html, body {
           per_page: 0,
           total: 0,
           visible: 10
-        }
+        },
+        currentProgress: ''
       }
     },
     created(){
@@ -749,11 +868,26 @@ html, body {
       ...mapActions(['fetchstats', 'fetchWorkerCategories', 'fetchIndividualUpcoming', 'fetchIndividualHistorical', 'fetchWorkerUpcoming', 'fetchWorkerHistorical']),
       allowedStep: m => m % 5 === 0,
       initialize(){
+        this.fetchHospitalList()
         this.fetchstats()
         this.fetchWorkerCategories()
         this.fetchIndividualUpcoming(this.individualUpcomingPagination.current_page)
         this.fetchIndividualHistorical(this.individualHistoricalPagination.current_page)
         this.fetchWorkerUpcoming()
+      },
+      seeHospitalList(){
+        console.log("here")
+        this.currentProgress = this.progress
+        this.progress = 'hospitalList'
+      },
+      fetchHospitalList(){
+        apiCall({url: '/api/userRequest?type=hospitalList', method: 'GET' })
+          .then(resp => {
+            this.hospitalWorkerList = resp
+          })
+          .catch(error => {
+            
+          })
       },
       goOnline(){
         var formData = {
@@ -899,6 +1033,9 @@ html, body {
         this.progress = 'Location'
         this.progressBar = 0
       },
+      backHospitallList(){
+        this.progress = this.currentProgress
+      },
       showClock(){
         this.progress = 'Time'
         this.progressBar = 25
@@ -979,6 +1116,53 @@ html, body {
         this.profile = this.workers[index]
         this.requestData.workerId = this.workers[index].id
       },
+      addHospitalList(){
+        console.log("profile", this.requestData)
+        this.loading = true
+        apiCall({url: '/api/userRequest?type=hospitalList', data: this.requestData, method: 'POST' })
+          .then(resp => {
+            this.fetchHospitalList()
+            this.loading = false
+            this.message = "Successfully Added to List"
+            this.color = 'success'
+            this.snackbar = true
+          })
+          .catch(error => {
+            this.loading = false
+            this.message = "An Error Occured, Please Try Again."
+            this.color = 'error'
+            this.snackbar = true
+          })
+      },
+      completeHospitalRequest(){
+        this.loading = true
+        apiCall({url: '/api/userRequest?type=hospitalComplete', data: this.requestData, method: 'POST' })
+          .then(resp => {
+            this.fetchHospitalList()
+            this.loading = false
+            this.progress = 'Location'
+            this.progressBar = 0
+            this.requestDialog = false
+            this.message = "Request Completed Successfully."
+            this.color = 'success'
+            this.snackbar = true
+
+            this.requestData.from = null
+            this.requestData.to = null
+            this.requestData.category = null
+            this.requestData.workerId = ''
+            this.clinicalOfficerColor = 'transparent'
+            this.doctorColor = 'transparent'
+            this.nurseColor = 'transparent'
+            this.pharmacistColor = 'transparent'
+          })
+          .catch(error => {
+            this.loading = false
+            this.message = "An Error Occured, Please Try Again."
+            this.color = 'error'
+            this.snackbar = true
+          })
+      },
       completeRequest(){
         this.loading = true
         apiCall({url: '/api/userRequest?type=complete', data: this.requestData, method: 'POST' })
@@ -1027,6 +1211,26 @@ html, body {
             this.nurseColor = 'transparent'
             this.clinicalOfficerColor = 'transparent'
             this.pharmacistColor = 'transparent'
+            this.workerlistDialog = true
+            apiCall({url: '/api/userRequest?type=new', data: this.requestData, method: 'POST' })
+            .then(resp => {
+              this.workerlistDialog = false
+              this.loading = false
+              this.workers = resp.data
+              this.workersPagination.current_page = resp.current_page
+		          this.workersPagination.total = resp.total
+		          this.workersPagination.per_page = resp.per_page
+
+              this.progress = 'Worker List'
+              this.progressBar = 75
+            })
+            .catch(error => {
+              this.workerlistDialog = false
+              this.loading = false
+              this.message = "An Error Occured, Please Try Again."
+              this.color = 'error'
+              this.snackbar = true
+            })
           }
         } else if(category == 2){
           if(this.requestData.category == 2){
@@ -1041,6 +1245,26 @@ html, body {
             this.doctorColor = 'transparent'
             this.clinicalOfficerColor = 'transparent'
             this.pharmacistColor = 'transparent'
+            this.workerlistDialog = true
+            apiCall({url: '/api/userRequest?type=new', data: this.requestData, method: 'POST' })
+            .then(resp => {
+              this.workerlistDialog = false
+              this.loading = false
+              this.workers = resp.data
+              this.workersPagination.current_page = resp.current_page
+		          this.workersPagination.total = resp.total
+		          this.workersPagination.per_page = resp.per_page
+
+              this.progress = 'Worker List'
+              this.progressBar = 75
+            })
+            .catch(error => {
+              this.workerlistDialog = false
+              this.loading = false
+              this.message = "An Error Occured, Please Try Again."
+              this.color = 'error'
+              this.snackbar = true
+            })
           }
         } else if(category == 3){
           if(this.requestData.category == 3){
@@ -1055,6 +1279,26 @@ html, body {
             this.doctorColor = 'transparent'
             this.nurseColor = 'transparent'
             this.pharmacistColor = 'transparent'
+            this.workerlistDialog = true
+            apiCall({url: '/api/userRequest?type=new', data: this.requestData, method: 'POST' })
+            .then(resp => {
+              this.workerlistDialog = false
+              this.loading = false
+              this.workers = resp.data
+              this.workersPagination.current_page = resp.current_page
+		          this.workersPagination.total = resp.total
+		          this.workersPagination.per_page = resp.per_page
+
+              this.progress = 'Worker List'
+              this.progressBar = 75
+            })
+            .catch(error => {
+              this.workerlistDialog = false
+              this.loading = false
+              this.message = "An Error Occured, Please Try Again."
+              this.color = 'error'
+              this.snackbar = true
+            })
           }
         } else if(category == 4){
           if(this.requestData.category == 4){
@@ -1069,6 +1313,26 @@ html, body {
             this.doctorColor = 'transparent'
             this.nurseColor = 'transparent'
             this.pharmacistColor = 'primary'
+            this.workerlistDialog = true
+            apiCall({url: '/api/userRequest?type=new', data: this.requestData, method: 'POST' })
+            .then(resp => {
+              this.workerlistDialog = false
+              this.loading = false
+              this.workers = resp.data
+              this.workersPagination.current_page = resp.current_page
+		          this.workersPagination.total = resp.total
+		          this.workersPagination.per_page = resp.per_page
+
+              this.progress = 'Worker List'
+              this.progressBar = 75
+            })
+            .catch(error => {
+              this.workerlistDialog = false
+              this.loading = false
+              this.message = "An Error Occured, Please Try Again."
+              this.color = 'error'
+              this.snackbar = true
+            })
           }
         }         
 

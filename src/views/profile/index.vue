@@ -67,161 +67,162 @@
                 <v-divider class="my-4"></v-divider>
                 <div v-if="$can('health_worker_profile')">
                     <p class="title"><b>Professional</b></p>
-                </div>
-                <v-flex xs12>
-                    <v-select
-                        v-model="profile.gender_id"
-                        :rules="inputRules"
-                        :items="genders"
-                        item-value="id"
-                        item-text="name"
-                        prepend-inner-icon="accessibility"
-                        name="gender"
-                        label="Gender"
-                        required
-                        class="text_field_2 mt-2"
-                        outline
-                    ></v-select>
-                </v-flex>
-                <v-flex xs12>
-                    <v-text-field
-                        v-model="profile.id_number"
-                        :rules="inputRules"
-                        prepend-inner-icon="credit_card"
-                        name="id_number"
-                        label="ID Number"
-                        outline
-                        class="text_field_2 mt-2"
-                    ></v-text-field>
-                </v-flex>
-                <v-flex xs12>
-                    <v-select
-                        v-model="profile.worker_category_id"
-                        :rules="inputRules"
-                        :items="allWorkerCategories"
-                        item-value="id"
-                        item-text="name"
-                        prepend-inner-icon="assignment_ind"
-                        name="job_group"
-                        label="Job Group"
-                        required
-                        class="text_field_2 mt-2"
-                        outline
-                        @input="updateSubCategory"
-                    ></v-select>
-                </v-flex>
-                <v-flex xs12>
-                    <v-select
-                        v-if="getProfile.health_worker_profile != null"
-                        v-model="profile.worker_sub_category_id"
-                        :rules="inputRules"
-                        :items="subjobs.worker_sub_category"
-                        item-value="id"
-                        item-text="name"
-                        prepend-inner-icon="assignment_turned_in"
-                        name="job_sub_group"
-                        label="Job Sub-Group"
-                        required
-                        class="text_field_2 mt-2"
-                        outline
-                    ></v-select>
-                    <v-select
-                        v-else
-                        v-model="profile.worker_sub_category_id"
-                        :rules="inputRules"
-                        :items="workerSubCategories"
-                        item-value="id"
-                        item-text="name"
-                        prepend-inner-icon="assignment_turned_in"
-                        name="job_sub_group"
-                        label="Job Sub-Group"
-                        required
-                        class="text_field_2 mt-2"
-                        outline
-                    ></v-select>
-                </v-flex>
-                <v-flex xs12>
-                    <v-text-field
-                        v-model="profile.licence_number"
-                        :rules="inputRules"
-                        prepend-inner-icon="chrome_reader_mode"
-                        name="licence_number"
-                        label="Licence Number"
-                        outline
-                        class="text_field_2 mt-2"
-                    ></v-text-field>
-                </v-flex>
-                <v-flex xs12>
-                    <v-text-field
-                        v-model="profile.qualification"
-                        :rules="inputRules"
-                        prepend-inner-icon="school"
-                        name="qualification"
-                        label="Qualification"
-                        outline
-                        class="text_field_2 mt-2"
-                    ></v-text-field>
-                </v-flex>
-                <v-flex xs12>
-                    <v-text-field
-                        v-model="profile.specialization"
-                        :rules="inputRules"
-                        prepend-inner-icon="assignment"
-                        name="specialization"
-                        label="Specialization"
-                        outline
-                        class="text_field_2 mt-2"
-                    ></v-text-field>
-                </v-flex>
-                <v-flex xs12>
-                    <v-text-field
-                        v-model="profile.experience_years"
-                        :rules="inputRules"
-                        prepend-inner-icon="hourglass_full"
-                        name="experience_years"
-                        label="Experience Years"
-                        outline
-                        class="text_field_2 mt-2"
-                    ></v-text-field>
-                </v-flex>
-                <v-flex xs12>
-                    <v-text-field
-                        v-model="profile.residence"
-                        :rules="inputRules"
-                        prepend-inner-icon="apartment"
-                        name="residence"
-                        label="Residence"
-                        outline
-                        class="text_field_2 mt-2"
-                    ></v-text-field>
-                </v-flex>
-                <v-flex xs12>
-                    <v-menu>
-                        <v-text-field
+                
+                    <v-flex xs12>
+                        <v-select
+                            v-model="profile.gender_id"
                             :rules="inputRules"
-                            :value="formattedDate"
-                            prepend-inner-icon="calendar_today"
-                            slot="activator"
-                            name="date_licence_renewal"
-                            label="Licence Renewal Date"
+                            :items="genders"
+                            item-value="id"
+                            item-text="name"
+                            prepend-inner-icon="accessibility"
+                            name="gender"
+                            label="Gender"
+                            required
+                            class="text_field_2 mt-2"
+                            outline
+                        ></v-select>
+                    </v-flex>
+                    <v-flex xs12>
+                        <v-text-field
+                            v-model="profile.id_number"
+                            :rules="inputRules"
+                            prepend-inner-icon="credit_card"
+                            name="id_number"
+                            label="ID Number"
                             outline
                             class="text_field_2 mt-2"
-                            >
-                        </v-text-field>
-                        <v-date-picker v-model="profile.date_licence_renewal"></v-date-picker>
-                    </v-menu>
-                </v-flex>
-                <v-flex xs12>
-                    <v-textarea
-                        v-model="profile.bio"
-                        :rules="inputRules"
-                        prepend-inner-icon="description"
-                        name="bio"
-                        label="Bio"
-                        class="mt-2"
-                        outline
-                    ></v-textarea>
-                </v-flex>
+                        ></v-text-field>
+                    </v-flex>
+                    <v-flex xs12>
+                        <v-select
+                            v-model="profile.worker_category_id"
+                            :rules="inputRules"
+                            :items="allWorkerCategories"
+                            item-value="id"
+                            item-text="name"
+                            prepend-inner-icon="assignment_ind"
+                            name="job_group"
+                            label="Job Group"
+                            required
+                            class="text_field_2 mt-2"
+                            outline
+                            @input="updateSubCategory"
+                        ></v-select>
+                    </v-flex>
+                    <v-flex xs12>
+                        <v-select
+                            v-if="getProfile.health_worker_profile != null"
+                            v-model="profile.worker_sub_category_id"
+                            :rules="inputRules"
+                            :items="subjobs.worker_sub_category"
+                            item-value="id"
+                            item-text="name"
+                            prepend-inner-icon="assignment_turned_in"
+                            name="job_sub_group"
+                            label="Job Sub-Group"
+                            required
+                            class="text_field_2 mt-2"
+                            outline
+                        ></v-select>
+                        <v-select
+                            v-else
+                            v-model="profile.worker_sub_category_id"
+                            :rules="inputRules"
+                            :items="workerSubCategories"
+                            item-value="id"
+                            item-text="name"
+                            prepend-inner-icon="assignment_turned_in"
+                            name="job_sub_group"
+                            label="Job Sub-Group"
+                            required
+                            class="text_field_2 mt-2"
+                            outline
+                        ></v-select>
+                    </v-flex>
+                    <v-flex xs12>
+                        <v-text-field
+                            v-model="profile.licence_number"
+                            :rules="inputRules"
+                            prepend-inner-icon="chrome_reader_mode"
+                            name="licence_number"
+                            label="Licence Number"
+                            outline
+                            class="text_field_2 mt-2"
+                        ></v-text-field>
+                    </v-flex>
+                    <v-flex xs12>
+                        <v-text-field
+                            v-model="profile.qualification"
+                            :rules="inputRules"
+                            prepend-inner-icon="school"
+                            name="qualification"
+                            label="Qualification"
+                            outline
+                            class="text_field_2 mt-2"
+                        ></v-text-field>
+                    </v-flex>
+                    <v-flex xs12>
+                        <v-text-field
+                            v-model="profile.specialization"
+                            :rules="inputRules"
+                            prepend-inner-icon="assignment"
+                            name="specialization"
+                            label="Specialization"
+                            outline
+                            class="text_field_2 mt-2"
+                        ></v-text-field>
+                    </v-flex>
+                    <v-flex xs12>
+                        <v-text-field
+                            v-model="profile.experience_years"
+                            :rules="inputRules"
+                            prepend-inner-icon="hourglass_full"
+                            name="experience_years"
+                            label="Experience Years"
+                            outline
+                            class="text_field_2 mt-2"
+                        ></v-text-field>
+                    </v-flex>
+                    <v-flex xs12>
+                        <v-text-field
+                            v-model="profile.residence"
+                            :rules="inputRules"
+                            prepend-inner-icon="apartment"
+                            name="residence"
+                            label="Residence"
+                            outline
+                            class="text_field_2 mt-2"
+                        ></v-text-field>
+                    </v-flex>
+                    <v-flex xs12>
+                        <v-menu>
+                            <v-text-field
+                                :rules="inputRules"
+                                :value="formattedDate"
+                                prepend-inner-icon="calendar_today"
+                                slot="activator"
+                                name="date_licence_renewal"
+                                label="Licence Renewal Date"
+                                outline
+                                class="text_field_2 mt-2"
+                                >
+                            </v-text-field>
+                            <v-date-picker v-model="profile.date_licence_renewal"></v-date-picker>
+                        </v-menu>
+                    </v-flex>
+                    <v-flex xs12>
+                        <v-textarea
+                            v-model="profile.bio"
+                            :rules="inputRules"
+                            prepend-inner-icon="description"
+                            name="bio"
+                            label="Bio"
+                            class="mt-2"
+                            outline
+                        ></v-textarea>
+                    </v-flex>
+                </div>
                 <v-flex xs12 class="mt-3">
                     <v-btn block depressed class="primary text-none" @click="updateProfile" :loading="loading">
                         Save
@@ -245,7 +246,11 @@
                     size="164"
                     tile
                 >
-                    <v-img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg"></v-img>
+                    <v-img :src="path+'/pictures/'+getProfile.image">
+                        <v-btn small style="position: absolute; right: 2px;" fab depressed @click="profilePic" :loading="imageLoader">
+                            <v-icon small  class="green--text">create</v-icon>
+                        </v-btn>
+                    </v-img>
                 </v-avatar>
             </v-flex>
             <v-flex xs12>
@@ -253,6 +258,13 @@
                     <div class="title white--text">{{getProfile.first_name}} {{getProfile.last_name}}</div>
                     <div class="white--text" v-if="$can('health_worker_profile') && getProfile.health_worker_profile != null">{{getProfile.health_worker_profile.worker_category.name}} - {{getProfile.health_worker_profile.worker_sub_category.name}}</div>
                 </div>
+                <input
+                    type="file"
+                    style="display: none"
+                    ref="image"
+                    accept="image/*"
+                    @change="onFilePicked"
+                  >
             </v-flex>
         </v-layout>
         </v-img>
@@ -306,6 +318,14 @@ import { USER_REQUEST } from '@/store/actions/user'
 export default {
     data(){
 		return{
+            path: process.env.VUE_APP_API_URL,
+
+            imageName: "",
+            imageUrl: "",
+            imageFile: "",
+
+            imageLoader: false,
+
 			color: '',
 			message: '',
 			snackbar: false,
@@ -352,6 +372,49 @@ export default {
         initialize(){
             this.fetchWorkerCategories()
             this.USER_REQUEST()
+        },
+        profilePic(){
+            this.$refs.image.click();
+        },
+        onFilePicked(e) {
+            this.imageLoader = true
+            const files = e.target.files;
+            if (files[0] !== undefined) {
+                this.imageName = files[0].name;
+                if (this.imageName.lastIndexOf(".") <= 0) {
+                return;
+                }
+                const fr = new FileReader();
+                fr.readAsDataURL(files[0]);
+                fr.addEventListener("load", () => {
+                this.imageUrl = fr.result;
+                this.imageFile = files[0]; // this is an image file that can be sent to server...
+                });
+
+                let formData = new FormData();
+                formData.append("name", this.imageName);
+                formData.append("file", this.imageFile);
+                const config = {
+                    headers: { "content-type": "multipart/form-data" }
+                };
+                console.log("image", formData)
+                formData.append("id", this.getProfile.id);
+                    apiCall({
+                        url: "/api/user?type=image",
+                        data: formData,
+                        config,
+                        method: "POST"
+                    }).then(resp => {
+                        console.log(resp);
+                        this.imageLoader = false
+                    }).catch(error => {
+                        this.imageLoader = false
+                    });
+            } else {
+                this.imageName = "";
+                this.imageFile = "";
+                this.imageUrl = "";
+            }
         },
         assignProfile(){
             this.profile.id = this.getProfile.id

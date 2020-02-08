@@ -179,6 +179,7 @@
     </v-dialog>
     <v-container>
         <v-layout column>
+          <div align="center" v-if="favourites.length == 0">No favourites added</div>
           <template v-for="(favourite, index) in favourites">
             <v-flex xs12 class="mb-1">
               <v-card
