@@ -3,6 +3,96 @@
     <v-snackbar v-model="snackbar" :timeout="4000" top :color="color">
         <span>{{message}}</span>
     </v-snackbar>
+     <v-dialog
+      v-model="commentsLoader"
+      hide-overlay
+      persistent
+      width="300"
+    >
+      <v-card
+        color="secondary"
+        dark
+      >
+        <v-card-text>
+          Fetching Comments..
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+     <v-dialog 
+    fullscreen
+    hide-overlay
+    transition="dialog-bottom-transition"
+    scrollable
+    v-model="commentsDialog">
+    <v-card>
+	    <v-toolbar
+        flat
+        dark
+        class="secondary"
+      >
+        <v-btn
+          flat
+          icon
+          dark
+          color="secondary"
+        >
+          <v-icon color="secondary">keyboard_backspace</v-icon>
+        </v-btn>
+        <v-toolbar-title>Comments</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn
+          icon
+          dark
+          @click="commentsDialog = false"
+        >
+          <v-icon>close</v-icon>
+        </v-btn>
+      </v-toolbar>
+      <v-card-text>
+        <v-layout column>
+            <div v-if="workerComments.length == 0">No Comments</div>
+            <v-flex xs12 v-for="(comment, index) in workerComments" :key="index" class="mb-1">
+              <v-card
+                elevation="0"
+                class="grey lighten-4 login-circle pa-2"
+              >
+                <v-layout row wrap>
+                  <v-flex xs3>
+                    <v-avatar
+                      size="70"
+                      color="grey lighten-4"
+                    >
+                      <img :src="path+'/pictures/'+comment.client.image" alt="avatar">
+                    </v-avatar>
+                  </v-flex>
+                  <v-flex xs9>
+                    <div><b>{{comment.client.first_name}} {{comment.client.last_name}}</b></div>
+                    <div>
+                      <v-rating
+                      :value="comment.rating"
+                      color="amber"
+                      dense
+                      half-increments
+                      readonly
+                      size="14"
+                      ></v-rating>
+                    </div>
+                    <div>{{formattedDate(comment.created_at)}}</div>
+                    <div class="mt-2">{{comment.comment}}</div>
+                  </v-flex>
+                </v-layout>
+              </v-card>
+            </v-flex>
+          </v-layout>
+
+      </v-card-text>
+    </v-card>
+  </v-dialog>
     <v-dialog 
       fullscreen
       hide-overlay
@@ -43,7 +133,7 @@
                   </v-avatar>
                 </v-flex>
                 <v-flex xs12>
-                  <div class="ma-2" v-if="$can('individual_request_service')">
+                  <div class="ma-2" v-if="$can('individual_request_service') ||  $can('hospital_request_service')">
                     <div class="title white--text">{{profile.worker.first_name}} {{profile.worker.last_name}}</div>
                     <div class="white--text">{{profile.worker.health_worker_profile.worker_category.name}} - {{profile.worker.health_worker_profile.worker_sub_category.name}}</div>
                   </div>
@@ -51,11 +141,11 @@
               </v-layout>
             </v-img>
               <v-container>
-                <div v-if="$can('individual_request_service')">{{profile.worker.health_worker_profile.bio}}</div>
-                <div class="my-4 subtitle-1 black--text" v-if="$can('individual_request_service')">
+                <div v-if="$can('individual_request_service' || $can('hospital_request_service'))">{{profile.worker.health_worker_profile.bio}}</div>
+                <div class="my-4 subtitle-1 black--text" v-if="$can('individual_request_service') || $can('hospital_request_service')">
                   {{profile.worker.health_worker_profile.residence}}
                 </div>
-                <div v-if="$can('individual_request_service')">
+                <div v-if="$can('individual_request_service') ||  $can('hospital_request_service')">
                   <v-rating
                     :value="profile.rating"
                     color="amber"
@@ -64,8 +154,9 @@
                     readonly
                     size="14"
                   ></v-rating>
+                  <div class="mt-2" @click="showComments(profile.worker)"><a>Comments</a></div>
                 </div>
-                <div class="grey--text" v-if="$can('individual_request_service')"><v-icon small left>people</v-icon>{{profile.rating.toFixed(1)}}/5 ({{profile.reviewers}})</div>
+                <div class="grey--text" v-if="$can('individual_request_service') || $can('hospital_request_service')"><v-icon small left>people</v-icon>{{profile.rating.toFixed(1)}}/5 ({{profile.reviewers}})</div>
                 
                 <div><v-icon small left>my_location</v-icon>{{profile.distance.toFixed(2)}}Km away</div>
 
@@ -142,7 +233,7 @@
                             </v-menu>
                         </v-flex>
                         <v-flex xs12 >
-                            <v-map v-if="$can('individual_request_service')" ref="myMapRef" style="position: relative; width: 100%; height: 180px; z-index: 2" :center="[latitude, longitude]" :zoom="15">
+                            <v-map v-if="$can('individual_request_service') ||  $can('hospital_request_service')" ref="myMapRef" style="position: relative; width: 100%; height: 180px; z-index: 2" :center="[latitude, longitude]" :zoom="15">
                                 <v-icondefault class="mt-5"></v-icondefault>
                                 <v-tilelayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></v-tilelayer>
                                 <v-marker
@@ -275,9 +366,12 @@ export default {
             {iconUrl, shadowUrl}
         ))
 		return{
-            icon: customicon,
-            menu1: false,
-            menu2: false,
+      icon: customicon,
+      menu1: false,
+      menu2: false,
+
+      commentsDialog: false,
+      commentsLoader: false,
 
 			color: '',
 			message: '',
@@ -299,7 +393,15 @@ export default {
                 workerId: null,
                 subGroup: null,
             },
-        }
+            workerComments: [],
+        workerCommentsPagination: {
+          search: ' ',
+          current_page: 1,
+          per_page: 0,
+          total: 0,
+          visible: 10
+        },
+      }
     },
     created(){
         this.initialize()
@@ -360,6 +462,21 @@ export default {
                 this.color = 'error'
                 this.snackbar = true
                 })
+      },
+      showComments(profile){
+        this.commentsLoader = true
+        apiCall({url: '/api/userRating?type=comments&user='+profile.id, method: 'GET' })
+          .then(resp => {
+            this.workerComments = resp.data,
+            this.workerCommentsPagination.current_page = resp.current_page
+		        this.workerCommentsPagination.total = resp.total
+		        this.workerCommentsPagination.per_page = resp.per_page
+            this.commentsDialog=true
+            this.commentsLoader = false
+          })
+          .catch(error => {
+            
+          })
       },
     },
     computed: {

@@ -3,6 +3,95 @@
   <v-snackbar v-model="snackbar" :timeout="4000" top :color="color">
     <span>{{message}}</span>
   </v-snackbar>
+  <v-dialog
+      v-model="commentsLoader"
+      hide-overlay
+      persistent
+      width="300"
+    >
+      <v-card
+        color="secondary"
+        dark
+      >
+        <v-card-text>
+          Fetching Comments..
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-dialog 
+    fullscreen
+    hide-overlay
+    transition="dialog-bottom-transition"
+    scrollable
+    v-model="commentsDialog">
+    <v-card>
+	    <v-toolbar
+        flat
+        dark
+        class="secondary"
+      >
+        <v-btn
+          flat
+          icon
+          dark
+          color="secondary"
+        >
+          <v-icon color="secondary">keyboard_backspace</v-icon>
+        </v-btn>
+        <v-toolbar-title>Comments</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn
+          icon
+          dark
+          @click="commentsDialog = false"
+        >
+          <v-icon>close</v-icon>
+        </v-btn>
+      </v-toolbar>
+      <v-card-text>
+        <v-layout column>
+            <div v-if="workerComments.length == 0">No Comments</div>
+            <v-flex xs12 v-for="(comment, index) in workerComments" :key="index" class="mb-1">
+              <v-card
+                elevation="0"
+                class="grey lighten-4 login-circle pa-2"
+              >
+                <v-layout row wrap>
+                  <v-flex xs3>
+                    <v-avatar
+                      size="70"
+                      color="grey lighten-4"
+                    >
+                      <img :src="path+'/pictures/'+comment.client.image" alt="avatar">
+                    </v-avatar>
+                  </v-flex>
+                  <v-flex xs9>
+                    <div><b>{{comment.client.first_name}} {{comment.client.last_name}}</b></div>
+                    <div>
+                      <v-rating
+                      :value="comment.rating"
+                      color="amber"
+                      dense
+                      half-increments
+                      readonly
+                      size="14"
+                      ></v-rating>
+                    </div>
+                    <div>{{formattedDate(comment.created_at)}}</div>
+                    <div class="mt-2">{{comment.comment}}</div>
+                  </v-flex>
+                </v-layout>
+              </v-card>
+            </v-flex>
+          </v-layout>
+      </v-card-text>
+    </v-card>
+  </v-dialog>
     <v-dialog 
       fullscreen
       hide-overlay
@@ -67,6 +156,7 @@
                     readonly
                     size="14"
                   ></v-rating>
+                  <div class="mt-2" @click="showComments(profile.recipient)"><a>Comments</a></div>
                 </div>
                 <div class="grey--text" v-if="$can('individual_request_service') || $can('hospital_request_service')"><v-icon small left>people</v-icon>{{profile.rating.toFixed(1)}}/5 ({{profile.reviewers}})</div>
                 <div v-if="$can('receive_service')"><v-icon small left>local_phone</v-icon>{{profile.requester.phone_no}}</div>
@@ -93,7 +183,7 @@
                   </v-layout>
                 </div>
                 <v-divider class="mx-1 my-2"></v-divider>
-                  <div v-if="profile.status_id == 3 && $can('individual_request_service') && profile.isFavourite == 0">
+                  <div v-if="(profile.status_id == 3 && $can('individual_request_service')) || (profile.status_id == 3 && $can('hospital_request_service')) && profile.isFavourite == 0">
                     <v-btn block depressed class="success white--text text-none ml-1" :loading="favouriteLoading" @click="addToFavourite(profile.recipient.id)">Add to Favourites</v-btn>
                   </div>
                   <div v-if="profile.status_id == 1 || profile.status_id == 2">
@@ -216,7 +306,7 @@
           </v-tab-item>
         </v-tabs>
       </div>
-      <div v-if="activeTab == 1 && $can('individual_request_service') || $can('hospital_request_service') || $can('hospital_request_service')" class="mt-2">
+      <div v-if="(activeTab == 1 && $can('individual_request_service')) || (activeTab == 1 && $can('hospital_request_service'))" class="mt-2">
         <v-layout column>
           <div class="mt-2"><v-icon small class="mr-2 orange--text">lens</v-icon>Pending</div>
           <v-divider class="my-2"></v-divider>
@@ -379,7 +469,7 @@
           </v-pagination>
         </div>
       </div>
-      <div v-if="activeTab == 2 && $can('individual_request_service') || $can('hospital_request_service')" class="mt-2">
+      <div v-if="(activeTab == 2 && $can('individual_request_service')) || (activeTab == 2 && $can('hospital_request_service'))" class="mt-2">
         <v-layout column>
           <template v-for="(worker, index) in allIndividualHistorical">
             <v-flex xs12 class="mb-1">
@@ -513,6 +603,9 @@ html, body {
             {iconUrl, shadowUrl}
           ))
             return{
+              commentsLoader: false,
+              commentsDialog: false,
+
                 snackbar: false,
                 message: '',
                 color: '',
@@ -550,7 +643,16 @@ html, body {
                 icon: customicon,
                 clusterOptions: {},
 
-                profileIndex: null
+                profileIndex: null,
+
+                workerComments: [],
+                workerCommentsPagination: {
+                  search: ' ',
+                  current_page: 1,
+                  per_page: 0,
+                  total: 0,
+                  visible: 10
+                },
             }
         },
         created(){
@@ -564,6 +666,21 @@ html, body {
             this.fetchIndividualHistorical(this.individualHistoricalPagination.current_page)
             this.fetchWorkerUpcoming(this.workerUpcomingPagination.current_page)
             this.fetchWorkerHistorical(this.workerHistoricalPagination.current_page)
+          },
+          showComments(profile){
+            this.commentsLoader = true
+            apiCall({url: '/api/userRating?type=comments&user='+profile.id, method: 'GET' })
+              .then(resp => {
+                this.workerComments = resp.data,
+                this.workerCommentsPagination.current_page = resp.current_page
+                this.workerCommentsPagination.total = resp.total
+                this.workerCommentsPagination.per_page = resp.per_page
+                this.commentsDialog=true
+                this.commentsLoader = false
+              })
+              .catch(error => {
+                
+              })
           },
           goToProfile(index){
             this.profile = this.allIndividualUpcoming[index]

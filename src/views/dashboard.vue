@@ -4,6 +4,26 @@
     <span>{{message}}</span>
   </v-snackbar>
   <v-dialog
+      v-model="commentsLoader"
+      hide-overlay
+      persistent
+      width="300"
+    >
+      <v-card
+        color="secondary"
+        dark
+      >
+        <v-card-text>
+          Fetching Comments..
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+  <v-dialog
       v-model="filterDialog"
       hide-overlay
       persistent
@@ -43,6 +63,80 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+  <v-dialog 
+    fullscreen
+    hide-overlay
+    transition="dialog-bottom-transition"
+    scrollable
+    v-model="commentsDialog">
+    <v-card>
+	    <v-toolbar
+        flat
+        dark
+        class="secondary"
+      >
+        <v-btn
+          flat
+          icon
+          dark
+          color="secondary"
+        >
+          <v-icon color="secondary">keyboard_backspace</v-icon>
+        </v-btn>
+        <v-toolbar-title>Comments</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn
+          icon
+          dark
+          @click="commentsDialog = false"
+        >
+          <v-icon>close</v-icon>
+        </v-btn>
+      </v-toolbar>
+      <v-card-text>
+        <v-layout column>
+            <div v-if="workerComments.length == 0">No Comments</div>
+            <v-flex xs12 v-for="(comment, index) in workerComments" :key="index" class="mb-1">
+              <v-card
+                elevation="0"
+                class="grey lighten-4 login-circle pa-2"
+              >
+                <v-layout row wrap>
+                  <v-flex xs3>
+                    <v-avatar
+                      size="70"
+                      color="grey lighten-4"
+                    >
+                      <img :src="path+'/pictures/'+comment.client.image" alt="avatar">
+                    </v-avatar>
+                  </v-flex>
+                  <v-flex xs9>
+                    <div><b>{{comment.client.first_name}} {{comment.client.last_name}}</b></div>
+                    <div>
+                      <v-rating
+                      :value="comment.rating"
+                      color="amber"
+                      dense
+                      half-increments
+                      readonly
+                      size="14"
+                      ></v-rating>
+                    </div>
+                    <div>{{formattedDate(comment.created_at)}}</div>
+                    <div class="mt-2">{{comment.comment}}</div>
+                  </v-flex>
+                </v-layout>
+              </v-card>
+            </v-flex>
+          </v-layout>
+
+      </v-card-text>
+    </v-card>
+  </v-dialog>
+
+
+
+
   <v-dialog 
     fullscreen
     hide-overlay
@@ -548,6 +642,7 @@
               readonly
               size="14"
             ></v-rating>
+            <div class="mt-2" @click="showComments(profile)"><a>Comments</a></div>
           </div>
           <div class="grey--text mt-2"><v-icon small left>people</v-icon>{{profile.rating.toFixed(1)}}/5 ({{profile.reviewers}})</div>
           <div class="mt-2"><v-icon small left>my_location</v-icon>{{profile.distance.toFixed(2)}}Km away</div>
@@ -746,6 +841,7 @@ html, body {
   import Vue from 'vue'
   import { mapGetters, mapActions } from 'vuex'
   import 'leaflet/dist/leaflet.css'
+  import format from 'date-fns/format'
 
   import * as Vue2Leaflet from 'vue2-leaflet'
   import { latLng, Icon, icon } from 'leaflet'
@@ -780,7 +876,9 @@ html, body {
 
       return {
         path: process.env.VUE_APP_API_URL,
+        commentsLoader: false,
         filterDialog: false,
+        commentsDialog: false,
         workerlistDialog: false,
 
         offlineLoading: false,
@@ -851,6 +949,14 @@ html, body {
           total: 0,
           visible: 10
         },
+        workerComments: [],
+        workerCommentsPagination: {
+          search: ' ',
+          current_page: 1,
+          per_page: 0,
+          total: 0,
+          visible: 10
+        },
         currentProgress: ''
       }
     },
@@ -874,6 +980,21 @@ html, body {
         this.fetchIndividualUpcoming(this.individualUpcomingPagination.current_page)
         this.fetchIndividualHistorical(this.individualHistoricalPagination.current_page)
         this.fetchWorkerUpcoming()
+      },
+      showComments(profile){
+        this.commentsLoader = true
+        apiCall({url: '/api/userRating?type=comments&user='+profile.id, method: 'GET' })
+          .then(resp => {
+            this.workerComments = resp.data,
+            this.workerCommentsPagination.current_page = resp.current_page
+		        this.workerCommentsPagination.total = resp.total
+		        this.workerCommentsPagination.per_page = resp.per_page
+            this.commentsDialog=true
+            this.commentsLoader = false
+          })
+          .catch(error => {
+            
+          })
       },
       seeHospitalList(){
         console.log("here")
@@ -1190,6 +1311,9 @@ html, body {
             this.color = 'error'
             this.snackbar = true
           })
+      },
+      formattedDate(date){
+        return date ? format(date, 'Do MMM YYYY') : ''
       },
       newRequest(){
         this.requestDialog = true

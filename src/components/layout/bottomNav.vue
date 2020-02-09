@@ -31,7 +31,7 @@
       </v-btn>
 
       <v-btn
-        v-if="$can('individual_request_service')"
+        v-if="$can('individual_request_service') || $can('hospital_request_service')"
         router to="/favourites"
       >
         <span>Favourites</span>
