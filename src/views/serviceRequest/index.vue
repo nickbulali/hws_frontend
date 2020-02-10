@@ -189,7 +189,7 @@
                   <div v-if="profile.status_id == 1 || profile.status_id == 2">
                     <v-map v-if="$can('individual_request_service') || $can('hospital_request_service')" ref="myMapRef" style="position: relative; width: 100%; height: 180px; z-index: 2" :center="[profile.workerLocation[0], profile.workerLocation[1]]" :zoom="15">
                       <v-icondefault class="mt-5"></v-icondefault>
-                      <v-tilelayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></v-tilelayer>
+                      <v-tilelayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"></v-tilelayer>
                       <v-marker
                         ref = "myMarker"
                         :lat-lng="[profile.workerLocation[0], profile.workerLocation[1]]"
@@ -200,7 +200,7 @@
                     </v-map>
                     <v-map v-if="$can('receive_service')" ref="myMapRef" style="position: relative; width: 100%; height: 250px; z-index: 2" :center="[profile.latitude, profile.longitude]" :zoom="15">
                       <v-icondefault class="mt-5"></v-icondefault>
-                      <v-tilelayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></v-tilelayer>
+                      <v-tilelayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"></v-tilelayer>
                       <v-marker
                           ref = "myMarker"
                           :lat-lng="[profile.latitude, profile.longitude]"

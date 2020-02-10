@@ -228,7 +228,7 @@
             <v-flex xs12>
               <v-map ref="myMapRef" style="position: absolute; width: 92%; height: 85%; z-index: 2" :center="[latitude, longitude]" :zoom="15">
                 <v-icondefault class="mt-5"></v-icondefault>
-                <v-tilelayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></v-tilelayer>
+                <v-tilelayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"></v-tilelayer>
                 <v-marker  
                   ref = "myMarker"
                   :lat-lng="[latitude, longitude]"
