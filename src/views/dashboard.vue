@@ -245,48 +245,129 @@
         <div v-if="progress == 'Time'">
           <v-layout column>
               <v-flex xs12>
-                <p class="headline">Pick Time</p>
+                <p class="headline">Request Date/Time</p>
               </v-flex>
               <v-flex xs12>
+                <v-flex xs12>
+                  <div v-if="progress == 'Time'">
+                  <v-layout row wrap>
+                    <v-flex xs5>
+                      <div class="mt-2">
+                        <v-icon>calendar_today</v-icon>
+                        Start Date
+                      </div>                      
+                    </v-flex>
+                    <v-flex xs7>
+                      <v-menu
+                        :nudge-left="60"
+                        transition="scale-transition"
+                      >
+                        <v-text-field
+                          :rules="inputRules"
+                          :value="formattedStratDate"
+                          slot="activator"
+                          single-line
+                          hide-details
+                          class="input_field"
+                        ></v-text-field>
+                        <v-date-picker
+                          color="secondary"
+                          v-model="requestData.dateFrom"
+                          :min="dateToday"
+                        ></v-date-picker>
+                      </v-menu>
+                    </v-flex>
+                  </v-layout>                    
+                  </div>
+                </v-flex>
                 <div v-if="progress == 'Time'">
-                  <v-menu
-                    ref="menu11"
-                    v-model="menu1"
-                    :close-on-content-click="false"
-                    :return-value.sync="requestData.from"
-                    transition="scale-transition"
-                    offset-y
-                    full-width
-                    max-width="290px"
-                    min-width="290px"
-                  >
-                    <template v-slot:activator="{ on }">
-                      <v-text-field
-                        v-model="requestData.from"
-                        label="Start Time"
-                        prepend-inner-icon="access_time"
-                        readonly
-                        v-on="on"
-                        outline
-                      ></v-text-field>
-                    </template>
-                    <v-time-picker
-                      v-if="menu1"
-                      v-model="requestData.from"
-                      :allowed-minutes="allowedStep"
-                      full-width
-                      color="blue"
-                      @click:minute="$refs.menu11.save(requestData.from)"
-                      format="24hr"
-                      :min="now"
-                    ></v-time-picker>
-                  </v-menu>
+                <v-layout row wrap>
+                  <v-flex xs5>
+                      <div class="mt-2">
+                        <v-icon>access_time</v-icon>
+                        Start Time
+                      </div>                      
+                    </v-flex>
+                    <v-flex xs7>
+                      <v-menu
+                        ref="startTime"
+                        v-model="menu1"
+                        :close-on-content-click="false"
+                        :return-value.sync="requestData.from"
+                        transition="scale-transition"
+                        offset-y
+                        full-width
+                        max-width="290px"
+                        min-width="290px"
+                        :nudge-left="80"
+                      >
+                        <template v-slot:activator="{ on }">
+                          <v-text-field
+                            v-model="requestData.from"
+                            readonly
+                            v-on="on"
+                            single-line
+                            hide-details
+                            class="input_field"
+                          ></v-text-field>
+                        </template>
+                        <v-time-picker
+                          v-if="menu1"
+                          v-model="requestData.from"
+                          :allowed-minutes="allowedStep"
+                          full-width
+                          color="secondary"
+                          @click:minute="$refs.startTime.save(requestData.from)"
+                          format="24hr"
+                          :min="now"
+                        ></v-time-picker>
+                      </v-menu>
+                    </v-flex>
+                </v-layout>
+                  
                 </div>
               </v-flex>
+              <v-divider class="my-2"></v-divider>
               <v-flex xs12>
+              <v-layout row wrap>
+                    <v-flex xs5>
+                      <div class="mt-2">
+                        <v-icon>calendar_today</v-icon>
+                        Finish Date
+                      </div>                      
+                    </v-flex>
+                    <v-flex xs7>
+                      <v-menu
+                        :nudge-left="60"
+                        transition="scale-transition"
+                      >
+                        <v-text-field
+                          :rules="inputRules"
+                          :value="formattedEndDate"
+                          slot="activator"
+                          single-line
+                          hide-details
+                          class="input_field"
+                        ></v-text-field>
+                        <v-date-picker
+                          color="secondary"
+                          v-model="requestData.dateTo"
+                          :min="requestData.dateFrom"
+                        ></v-date-picker>
+                      </v-menu>
+                    </v-flex>
+                  </v-layout>
                 <div v-if="progress == 'Time'">
-                  <v-menu
-                    ref="menu12"
+                <v-layout row wrap>
+                  <v-flex xs5>
+                    <div class="mt-2">
+                      <v-icon>access_time</v-icon>
+                      Finish Time
+                    </div>                      
+                  </v-flex>
+                  <v-flex xs7>
+                    <v-menu
+                    ref="endTime"
                     v-model="menu2"
                     :close-on-content-click="false"
                     :return-value.sync="requestData.to"
@@ -295,15 +376,16 @@
                     full-width
                     max-width="290px"
                     min-width="290px"
+                    :nudge-left="80"
                   >
                     <template v-slot:activator="{ on }">
                       <v-text-field
                         v-model="requestData.to"
-                        label="End Time"
-                        prepend-inner-icon="access_time"
                         readonly
                         v-on="on"
-                        outline
+                        single-line
+                        hide-details
+                        class="input_field"
                       ></v-text-field>
                     </template>
                     <v-time-picker
@@ -311,12 +393,15 @@
                       v-model="requestData.to"
                       :allowed-minutes="allowedStep"
                       full-width
-                      color="blue"
-                      @click:minute="$refs.menu12.save(requestData.to)"
+                      color="secondary"
+                      @click:minute="$refs.endTime.save(requestData.to)"
                       format="24hr"
-                      :min="requestData.from"
+                      :min="endMin"
                     ></v-time-picker>
                   </v-menu>
+                  </v-flex>
+                </v-layout>
+                  
                 </div>
               </v-flex>
           </v-layout>
@@ -646,6 +731,7 @@
           </div>
           <div class="grey--text mt-2"><v-icon small left>people</v-icon>{{profile.rating.toFixed(1)}}/5 ({{profile.reviewers}})</div>
           <div class="mt-2"><v-icon small left>my_location</v-icon>{{profile.distance.toFixed(2)}}Km away</div>
+          <div class="mt-2"><v-icon small left>money</v-icon>Kshs {{profile.rate.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}}/Hr</div>
         
         <v-divider class="mx-4"></v-divider>
       
@@ -900,6 +986,7 @@ html, body {
 
         requestDialog: false,
         menu1: false,
+        menu12: false,
         menu2: false,
         sheet: false,
         //showMap: false,
@@ -928,6 +1015,9 @@ html, body {
 
         requestData: {
           location: {},
+          dateFrom: null,
+          dateTo: null,
+
           from: null,
           to: null,
           category: null,
@@ -957,7 +1047,12 @@ html, body {
           total: 0,
           visible: 10
         },
-        currentProgress: ''
+        currentProgress: '',
+
+        inputRules: [
+          v=>v.length >= !v || 'Field is required'
+        ],
+        months: ["01","02","03","04","05","06","07","08","09","10","11","12"]
       }
     },
     created(){
@@ -1470,10 +1565,33 @@ html, body {
         'individualUpcomingPagination',
         'individualHistoricalPagination'
       ]),
+      formattedStratDate(){
+        return this.requestData.dateFrom ? format(this.requestData.dateFrom, 'Do MMM YYYY') : ''
+      },
+      formattedEndDate(){
+        return this.requestData.dateTo ? format(this.requestData.dateTo, 'Do MMM YYYY') : ''
+      },
+      dateToday(){
+        var today = new Date();
+
+        var timestamp = today.getFullYear()+"-"+(this.months[today.getMonth()])+"-"+today.getDate()
+        return timestamp
+      },
       now(){
         var today = new Date();
-        var now = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
+        var timestamp = today.getFullYear()+"-"+(this.months[today.getMonth()])+"-"+today.getDate()
+        if(this.requestData.dateFrom == timestamp){
+          var now = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        
         return now
+        }
+        
+      },
+      endMin(){
+        if(this.requestData.dateFrom == this.requestData.dateTo){
+          return this.requestData.from
+        }
       },
       workersLength: function() {
 	        return Math.ceil(this.workersPagination.total / this.workersPagination.per_page);

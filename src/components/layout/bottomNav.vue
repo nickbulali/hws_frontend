@@ -24,10 +24,10 @@
 
       <v-btn
         v-if="$can('receive_service')"
-        router to="/hospitals"
+        router to="/income"
       >
-        <span>Hospitals</span>
-        <v-icon dark>local_hospital</v-icon>
+        <span>Income</span>
+        <v-icon dark>money</v-icon>
       </v-btn>
 
       <v-btn

@@ -161,6 +161,8 @@
                 <div class="grey--text" v-if="$can('individual_request_service') || $can('hospital_request_service')"><v-icon small left>people</v-icon>{{profile.rating.toFixed(1)}}/5 ({{profile.reviewers}})</div>
                 <div v-if="$can('receive_service')"><v-icon small left>local_phone</v-icon>{{profile.requester.phone_no}}</div>
                 <div v-if="profile.status_id == 1 || profile.status_id == 2"><v-icon small left>my_location</v-icon>{{profile.distance.toFixed(2)}}Km away</div>
+                <div v-if="(profile.status_id == 1 || profile.status_id == 2) && ($can('individual_request_service') || $can('hospital_request_service'))"><v-icon small left>local_phone</v-icon>{{profile.recipient.phone_no}}</div>
+
 
                 <div v-if="$can('receive_service') && profile.status_id == 1">
                   <v-layout row wrap>
@@ -175,10 +177,18 @@
                 <div v-if="$can('receive_service') && profile.status_id == 2">
                   <v-layout row wrap>
                     <v-flex xs6>
-                      <v-btn block depressed class="green white--text text-none mr-1" :loading="completeLoading" @click="completeRequest(profile.id)">Complete</v-btn>
+                      <!--<v-btn block depressed class="green white--text text-none mr-1" :loading="completeLoading" @click="completeRequest(profile.id)">Complete</v-btn>-->
+                      <v-btn block depressed class="blue white--text text-none mr-1" :loading="startLoading" @click="startRequest(profile.id)">Start</v-btn>
                     </v-flex>
                     <v-flex xs6>
                       <v-btn block depressed class="red white--text text-none ml-1" :loading="cancelLoading" @click="cancelRequest(profile.id)">Cancel</v-btn>
+                    </v-flex>
+                  </v-layout>
+                </div>
+                <div v-if="$can('receive_service') && profile.status_id == 5">
+                  <v-layout row wrap>
+                    <v-flex xs12>
+                      <v-btn block depressed class="green white--text text-none mr-1" :loading="completeLoading" @click="completeRequest(profile.id)">Complete</v-btn>
                     </v-flex>
                   </v-layout>
                 </div>
@@ -340,6 +350,8 @@
                       ></v-rating>
                     </div>
                     <div class="mt-2">{{worker.recipient.health_worker_profile.bio.substring(0,80)+".."}}</div>
+                    <div class="mt-1" v-if="worker.from_date != worker.to_date"><v-icon small class="mr-2">calendar_today</v-icon>{{formattedDate(worker.from_date)}} - {{formattedDate(worker.to_date)}}</div>
+                    <div class="mt-1" v-if="worker.from_date == worker.to_date"><v-icon small class="mr-2">calendar_today</v-icon>{{formattedDate(worker.from_date)}}</div>
                     <div class="mt-1"><v-icon small class="mr-2">access_time</v-icon>{{worker.from}} - {{worker.to}} Hrs</div>
                     <div class="mt-1"><v-icon small class="mr-2">my_location</v-icon>{{worker.distance.toFixed(2)}}Km from Destination</div>
                   </v-flex>
@@ -348,7 +360,7 @@
             </v-flex>
           </template>
           
-          <div class="mt-2"><v-icon small class="mr-2 green--text">lens</v-icon>Active</div>
+          <div class="mt-2"><v-icon small class="mr-2 green--text">lens</v-icon>Accepted</div>
           <v-divider class="my-2"></v-divider>
           
           <template v-for="(worker, index) in allIndividualUpcoming">
@@ -381,8 +393,49 @@
                       ></v-rating>
                     </div>
                     <div class="mt-2">{{worker.recipient.health_worker_profile.bio.substring(0,80)+".."}}</div>
+                    <div class="mt-1" v-if="worker.from_date != worker.to_date"><v-icon small class="mr-2">calendar_today</v-icon>{{formattedDate(worker.from_date)}} - {{formattedDate(worker.to_date)}}</div>
+                    <div class="mt-1" v-if="worker.from_date == worker.to_date"><v-icon small class="mr-2">calendar_today</v-icon>{{formattedDate(worker.from_date)}}</div>
                     <div class="mt-1"><v-icon small class="mr-2">access_time</v-icon>{{worker.from}} - {{worker.to}} Hrs</div>
                     <div class="mt-1"><v-icon small class="mr-2">my_location</v-icon>{{worker.distance.toFixed(2)}}Km from Destination</div>
+                  </v-flex>
+                </v-layout>
+              </v-card>
+            </v-flex>
+          </template>
+          <div class="mt-2"><v-icon small class="mr-2 blue--text">lens</v-icon>Running</div>
+          <v-divider class="my-2"></v-divider>
+          
+          <template v-for="(worker, index) in allIndividualUpcoming">
+            <v-flex xs12 class="mb-1" v-if="worker.status_id == 5">
+              <v-card
+                elevation="0"
+                class="grey lighten-4 login-circle pa-2"
+                @click="goToProfile(index)"
+              >
+                <v-layout row wrap>
+                  <v-flex xs3>
+                    <v-avatar
+                      size="70"
+                      color="grey lighten-4"
+                    >
+                      <img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" alt="avatar">
+                    </v-avatar>
+                  </v-flex>
+                  <v-flex xs9>
+                    <div><b>{{worker.recipient.first_name}} {{worker.recipient.last_name}}</b></div>
+                    <div class="grey--text">{{worker.recipient.health_worker_profile.worker_category.name}} - {{worker.recipient.health_worker_profile.worker_sub_category.name}}</div>
+                    <div>
+                      <v-rating
+                      :value="worker.rating"
+                      color="amber"
+                      dense
+                      half-increments
+                      readonly
+                      size="14"
+                      ></v-rating>
+                    </div>
+                    <div class="mt-2">{{worker.recipient.health_worker_profile.bio.substring(0,80)+".."}}</div>
+                    <div class="mt-1"><v-icon small class="mr-2">access_time</v-icon>{{worker.total_duration}}</div>
                   </v-flex>
                 </v-layout>
               </v-card>
@@ -421,6 +474,8 @@
                   </v-flex>
                   <v-flex xs9>
                     <div><b>{{client.requester.first_name}} {{client.requester.last_name}}</b></div>
+                    <div class="mt-1" v-if="client.from_date != client.to_date"><v-icon small class="mr-2">calendar_today</v-icon>{{formattedDate(client.from_date)}} - {{formattedDate(client.to_date)}}</div>
+                    <div class="mt-1" v-if="client.from_date == client.to_date"><v-icon small class="mr-2">calendar_today</v-icon>{{formattedDate(client.from_date)}}</div>
                     <div class="mt-1"><v-icon small class="mr-2">access_time</v-icon>{{client.from}} - {{client.to}} Hrs</div>
                     <div class="mt-1"><v-icon small class="mr-2">my_location</v-icon>{{client.distance.toFixed(2)}}Km Away</div>
                   </v-flex>
@@ -429,7 +484,7 @@
             </v-flex>
           </template>
           
-          <div class="mt-2"><v-icon small class="mr-2 green--text">lens</v-icon>Active</div>
+          <div class="mt-2"><v-icon small class="mr-2 green--text">lens</v-icon>Accepted</div>
           <v-divider class="my-2"></v-divider>
           
           <template v-for="(client, index) in allWorkerUpcoming">
@@ -450,9 +505,38 @@
                   </v-flex>
                   <v-flex xs9>
                     <div><b>{{client.requester.first_name}} {{client.requester.last_name}}</b></div>
-                    
+                    <div class="mt-1" v-if="client.from_date != client.to_date"><v-icon small class="mr-2">calendar_today</v-icon>{{formattedDate(client.from_date)}} - {{formattedDate(client.to_date)}}</div>
+                    <div class="mt-1" v-if="client.from_date == client.to_date"><v-icon small class="mr-2">calendar_today</v-icon>{{formattedDate(client.from_date)}}</div>          
                     <div class="mt-1"><v-icon small class="mr-2">access_time</v-icon>{{client.from}} - {{client.to}} Hrs</div>
                     <div class="mt-1"><v-icon small class="mr-2">my_location</v-icon>{{client.distance.toFixed(2)}}Km from Destination</div>
+                  </v-flex>
+                </v-layout>
+              </v-card>
+            </v-flex>
+          </template>
+
+          <div class="mt-2"><v-icon small class="mr-2 blue--text">lens</v-icon>Running</div>
+          <v-divider class="my-2"></v-divider>
+          
+          <template v-for="(client, index) in allWorkerUpcoming">
+            <v-flex xs12 class="mb-1" v-if="client.status_id == 5">
+              <v-card
+                elevation="0"
+                class="grey lighten-4 login-circle pa-2"
+                @click="goToIndividualProfile(index)"
+              >
+                <v-layout row wrap>
+                  <v-flex xs3>
+                    <v-avatar
+                      size="70"
+                      color="grey lighten-4"
+                    >
+                      <img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" alt="avatar">
+                    </v-avatar>
+                  </v-flex>
+                  <v-flex xs9>
+                    <div><b>{{client.requester.first_name}} {{client.requester.last_name}}</b></div>          
+                    <div class="mt-1"><v-icon small class="mr-2">access_time</v-icon>{{client.total_duration}}</div>
                   </v-flex>
                 </v-layout>
               </v-card>
@@ -500,8 +584,11 @@
                       size="14"
                       ></v-rating>
                     </div>
-                    <div class="mt-1"><v-icon small class="mr-2">calendar_today</v-icon>{{formattedDate(worker.created_at)}}</div>
-                    <div class="mt-1"><v-icon small class="mr-2">access_time</v-icon>{{worker.from}} - {{worker.to}} Hrs</div>
+                    <div class="mt-1"><v-icon small class="mr-2">calendar_today</v-icon>{{formattedDate(worker.start_time)}}</div>
+                    <div class="mt-1"><v-icon small class="mr-2">access_time</v-icon>{{formattedTime(worker.start_time)}} - {{formattedTime(worker.end_time)}} Hrs</div>
+                    <div class="mt-1"><v-icon small class="mr-2">money</v-icon>Kshs {{worker.bill.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}}</div>
+                    <div class="mt-1 red--text" v-if="worker.bill_status==0">Unpaid</div>
+                    <div class="mt-1 green--text" v-if="worker.bill_status==1">Paid</div>
                     
                   </v-flex>
                 </v-layout>
@@ -539,9 +626,11 @@
                   </v-flex>
                   <v-flex xs9>
                     <div><b>{{worker.requester.first_name}} {{worker.requester.last_name}}</b></div>
-                    <div class="mt-1"><v-icon small class="mr-2">calendar_today</v-icon>{{formattedDate(worker.created_at)}}</div>
-                    <div class="mt-1"><v-icon small class="mr-2">access_time</v-icon>{{worker.from}} - {{worker.to}} Hrs</div>
-                    
+                    <div class="mt-1"><v-icon small class="mr-2">calendar_today</v-icon>{{formattedDate(worker.start_time)}}</div>
+                    <div class="mt-1"><v-icon small class="mr-2">access_time</v-icon>{{formattedTime(worker.start_time)}} - {{formattedTime(worker.end_time)}} Hrs</div>
+                    <div class="mt-1"><v-icon small class="mr-2">money</v-icon>Kshs {{worker.bill.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}}</div>
+                    <div class="mt-1 red--text" v-if="worker.bill_status==0">Unpaid</div>
+                    <div class="mt-1 green--text" v-if="worker.bill_status==1">Paid</div>
                   </v-flex>
                 </v-layout>
               </v-card>
@@ -619,6 +708,7 @@ html, body {
                 acceptLoading: false,
                 rejectLoading: false,
                 completeLoading: false,
+                startLoading: false,
                 cancelLoading: false,
                 ratingLoader: false,
                 favouriteLoading: false,
@@ -760,6 +850,21 @@ html, body {
               })
             }
           },
+          startRequest(id){
+            this.startLoading = true
+            var formData = {
+              type: 'start'
+            }
+            apiCall({url: '/api/userRequest/'+id, data: formData, method: 'PUT' })
+              .then(resp => {
+                this.startLoading = false
+                this.profileDialog = false
+                this.fetchWorkerUpcoming(this.workerUpcomingPagination.current_page)
+              })
+              .catch(error => {
+                this.startLoading = false
+              })
+          },
           completeRequest(id){
             this.completeLoading = true
             var formData = {
@@ -770,6 +875,7 @@ html, body {
                 this.completeLoading = false
                 this.profileDialog = false
                 this.fetchWorkerUpcoming(this.workerUpcomingPagination.current_page)
+                this.fetchWorkerHistorical(this.workerHistoricalPagination.current_page)
               })
               .catch(error => {
                 this.completeLoading = false
@@ -823,6 +929,9 @@ html, body {
           },
           formattedDate(date){
         	  return date ? format(date, 'Do MMM YYYY') : ''
+    	    },
+          formattedTime(date){
+        	  return date ? format(date, 'HH:mm:ss') : ''
     	    },
         },
         computed: {

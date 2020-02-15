@@ -3,7 +3,8 @@ import apiCall from '../../utils/api'
 const state = {
     individualUpcoming: [],
     individualHistorical: [],
-    workerUpcoming: [],
+	workerUpcoming: [],
+	workerStarted: [],
     workerHistorical: [],
     individualUpcomingPagination: {
 		search: ' ',
@@ -32,6 +33,13 @@ const state = {
 		per_page: 0,
 	    total: 0,
 	    visible: 10
+	},
+	workerStartedPagination: {
+		search: ' ',
+		current_page: 1,
+		per_page: 0,
+	    total: 0,
+	    visible: 10
     },
 };
 
@@ -40,10 +48,12 @@ const getters = {
     allIndividualHistorical: (state) => state.individualHistorical,
     allWorkerUpcoming: (state) => state.workerUpcoming,
 	allWorkerHistorical: (state) => state.workerHistorical,
+	allWorkerStarted: (state) => state.workerStarted,
 	individualUpcomingPagination: (state) => state.individualUpcomingPagination,
 	individualHistoricalPagination: (state) => state.individualHistoricalPagination,
 	workerUpcomingPagination: (state) => state.workerUpcomingPagination,
 	workerHistoricalPagination: (state) => state.workerHistoricalPagination,
+	workerStartedPagination: (state) => state.workerStartedPagination,
 };
 
 const actions = {
@@ -62,6 +72,10 @@ const actions = {
     async fetchWorkerHistorical({commit}, page) {
 		const response = await apiCall({url: `/api/userRequest?page=${page}&type=workerHistorical`, method: 'GET' });
 		commit('setWorkerHistorical', response)
+	},
+	async fetchWorkerStarted({commit}, page) {
+		const response = await apiCall({url: `/api/userRequest?page=${page}&type=workerStarted`, method: 'GET' });
+		commit('setWorkerStarted', response)
 	},
 };
 
@@ -89,6 +103,12 @@ const mutations = {
 		state.workerHistoricalPagination.current_page = userRequest.current_page
 		state.workerHistoricalPagination.total = userRequest.total
 		state.workerHistoricalPagination.per_page = userRequest.per_page
+	},
+	setWorkerStarted: (state, userRequest) => {
+		state.workerStarted = userRequest.data
+		state.workerStartedPagination.current_page = userRequest.current_page
+		state.workerStartedPagination.total = userRequest.total
+		state.workerStartedPagination.per_page = userRequest.per_page
 	},
 };
 
