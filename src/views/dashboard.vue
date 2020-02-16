@@ -269,6 +269,7 @@
                           single-line
                           hide-details
                           class="input_field"
+                          readonly
                         ></v-text-field>
                         <v-date-picker
                           color="secondary"
@@ -348,6 +349,7 @@
                           single-line
                           hide-details
                           class="input_field"
+                          readonly
                         ></v-text-field>
                         <v-date-picker
                           color="secondary"
@@ -1363,6 +1365,8 @@ html, body {
             this.color = 'success'
             this.snackbar = true
 
+            this.requestData.dateFrom = null
+            this.requestData.dateTo = null
             this.requestData.from = null
             this.requestData.to = null
             this.requestData.category = null
@@ -1391,6 +1395,8 @@ html, body {
             this.color = 'success'
             this.snackbar = true
 
+            this.requestData.dateFrom = null
+            this.requestData.dateTo = null
             this.requestData.from = null
             this.requestData.to = null
             this.requestData.category = null

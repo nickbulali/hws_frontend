@@ -128,7 +128,8 @@
                     size="164"
                     tile
                   >
-                    <v-img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg"></v-img>
+                    <v-img v-if="$can('individual_request_service') || $can('hospital_request_service')" :src="path+'/pictures/'+profile.recipient.image"></v-img>
+                    <v-img v-if="$can('receive_service')" :src="path+'/pictures/'+profile.requester.image"></v-img>
                   </v-avatar>
                 </v-flex>
                 <v-flex xs12>
@@ -333,7 +334,7 @@
                       size="70"
                       color="grey lighten-4"
                     >
-                      <img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" alt="avatar">
+                      <img :src="path+'/pictures/'+worker.recipient.image" alt="avatar">
                     </v-avatar>
                   </v-flex>
                   <v-flex xs9>
@@ -376,7 +377,7 @@
                       size="70"
                       color="grey lighten-4"
                     >
-                      <img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" alt="avatar">
+                      <img :src="path+'/pictures/'+worker.recipient.image" alt="avatar">
                     </v-avatar>
                   </v-flex>
                   <v-flex xs9>
@@ -418,7 +419,7 @@
                       size="70"
                       color="grey lighten-4"
                     >
-                      <img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" alt="avatar">
+                      <img :src="path+'/pictures/'+worker.recipient.image" alt="avatar">
                     </v-avatar>
                   </v-flex>
                   <v-flex xs9>
@@ -469,7 +470,7 @@
                       size="70"
                       color="grey lighten-4"
                     >
-                      <img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" alt="avatar">
+                      <img :src="path+'/pictures/'+client.requester.image" alt="avatar">
                     </v-avatar>
                   </v-flex>
                   <v-flex xs9>
@@ -500,7 +501,7 @@
                       size="70"
                       color="grey lighten-4"
                     >
-                      <img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" alt="avatar">
+                      <img :src="path+'/pictures/'+client.requester.image" alt="avatar">
                     </v-avatar>
                   </v-flex>
                   <v-flex xs9>
@@ -531,7 +532,7 @@
                       size="70"
                       color="grey lighten-4"
                     >
-                      <img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" alt="avatar">
+                      <img :src="path+'/pictures/'+client.requester.image" alt="avatar">
                     </v-avatar>
                   </v-flex>
                   <v-flex xs9>
@@ -568,7 +569,7 @@
                       size="70"
                       color="grey lighten-4"
                     >
-                      <img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" alt="avatar">
+                      <img :src="path+'/pictures/'+worker.recipient.image" alt="avatar">
                     </v-avatar>
                   </v-flex>
                   <v-flex xs9>
@@ -621,7 +622,7 @@
                       size="70"
                       color="grey lighten-4"
                     >
-                      <img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg" alt="avatar">
+                      <img :src="path+'/pictures/'+worker.requester.image" alt="avatar">
                     </v-avatar>
                   </v-flex>
                   <v-flex xs9>
@@ -692,6 +693,7 @@ html, body {
             {iconUrl, shadowUrl}
           ))
             return{
+              path: process.env.VUE_APP_API_URL,
               commentsLoader: false,
               commentsDialog: false,
 

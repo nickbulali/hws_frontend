@@ -52,7 +52,7 @@
                             class="text_field_2 mt-2"
                         ></v-text-field>
                     </v-flex>
-                    <v-flex xs12>
+                    <!--<v-flex xs12>
                         <v-text-field
                             v-model="profile.email"
                             :rules="inputRules"
@@ -62,7 +62,7 @@
                             outline
                             class="text_field_2 mt-2"
                         ></v-text-field>
-                    </v-flex>
+                    </v-flex>-->
                 </div>
                 <v-divider class="my-4"></v-divider>
                 <div v-if="$can('health_worker_profile')">
@@ -320,9 +320,9 @@ export default {
 		return{
             path: process.env.VUE_APP_API_URL,
 
-            imageName: "",
-            imageUrl: "",
-            imageFile: "",
+            imageName: '',
+            imageUrl: '',
+            imageFile: '',
 
             imageLoader: false,
 
@@ -376,10 +376,34 @@ export default {
         profilePic(){
             this.$refs.image.click();
         },
+        uploadImage(){
+            let formData = new FormData();
+            formData.append("name", this.imageName);
+            formData.append("file", this.imageFile);
+            const config = {
+                headers: { "content-type": "multipart/form-data" }
+            };
+            
+            formData.append("id", this.getProfile.id);
+
+            apiCall({
+                url: "/api/user?type=image",
+                data: formData,
+                config,
+                method: "POST"
+            }).then(resp => {
+                console.log(resp);
+                this.imageLoader = false
+                this.USER_REQUEST()
+            }).catch(error => {
+                this.imageLoader = false
+            });
+        },
         onFilePicked(e) {
             this.imageLoader = true
             const files = e.target.files;
             if (files[0] !== undefined) {
+                
                 this.imageName = files[0].name;
                 if (this.imageName.lastIndexOf(".") <= 0) {
                 return;
@@ -389,27 +413,11 @@ export default {
                 fr.addEventListener("load", () => {
                 this.imageUrl = fr.result;
                 this.imageFile = files[0]; // this is an image file that can be sent to server...
-                });
+                });   
 
-                let formData = new FormData();
-                formData.append("name", this.imageName);
-                formData.append("file", this.imageFile);
-                const config = {
-                    headers: { "content-type": "multipart/form-data" }
-                };
-                console.log("image", formData)
-                formData.append("id", this.getProfile.id);
-                    apiCall({
-                        url: "/api/user?type=image",
-                        data: formData,
-                        config,
-                        method: "POST"
-                    }).then(resp => {
-                        console.log(resp);
-                        this.imageLoader = false
-                    }).catch(error => {
-                        this.imageLoader = false
-                    });
+                setTimeout(()=>{
+                    this.uploadImage()
+                },2000);
             } else {
                 this.imageName = "";
                 this.imageFile = "";
