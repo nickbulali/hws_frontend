@@ -52,7 +52,9 @@
 								</v-flex>
 								<v-flex xs12 class="mb-5">
 									<div align="right" class="mt-3">
-										<a to="reset-password" class="white--text">Forgot Password?</a>
+										<v-btn flat class="text-none">
+											<a router to="reset-password" class="white--text">Forgot Password?</a>
+										</v-btn>										
 									</div>
 								</v-flex>
 							</v-layout>
