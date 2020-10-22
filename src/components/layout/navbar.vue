@@ -14,7 +14,7 @@
                   >
                 </v-avatar>
 			<v-toolbar-title class="text-uppercase white--text">
-				<span class="white--text text-none">Healthcare Connect</span>
+				<span class="white--text text-none">Healthcare Workers Scheduler</span>
 			</v-toolbar-title>
 			<v-spacer></v-spacer>
 			<v-menu left>
@@ -119,7 +119,7 @@
 						<img src="avatar-1.png">
 					</v-avatar>
 					<p class="white--text subheading mt-1">
-						Benjamin Ace
+			Nick Bulali
 					</p>
 				</v-flex>
 			</v-layout>

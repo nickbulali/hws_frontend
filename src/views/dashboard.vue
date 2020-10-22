@@ -848,11 +848,13 @@
   		  <v-flex xs12>
           <div align="center" class="mt-3">
             <v-img
-              src="home.png"
-              aspect-ratio="1.9"
-              max-width="200"
+             src="logo.png"
+                  aspect-ratio="1"
+                  max-width="200"
             ></v-img>
           </div>
+
+           <div class="title white--text"> Welcome {{getProfile.first_name}} {{getProfile.last_name}}</div>
         </v-flex>
         <div v-if="$can('individual_request_service') || $can('hospital_request_service')">
           <div>

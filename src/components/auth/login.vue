@@ -13,7 +13,7 @@
 			<v-flex xs12 class="mt-5">
 				<div align="center" class="mt-5">
 					<p class="headline white--text"><b>Welcome Back!</b></p>
-					<p class="white--text">Login to continue HRH Connect</p>
+					<p class="white--text">Login to continue HWS</p>
 				</div>
 			</v-flex>
 			<v-flex xs12 class="ma-2">
